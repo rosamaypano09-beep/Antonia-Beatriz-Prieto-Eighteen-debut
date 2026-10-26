@@ -269,6 +269,16 @@
   animation: gala-seam 1.4s ease-out 0.05s forwards;
 }
 
+/* Phones: lighter fold shadows keep 16 skewing layers smooth */
+@media (max-width: 640px) {
+  .gala-curtain__fold {
+    box-shadow: -3px 0 8px rgba(0, 0, 0, 0.3);
+  }
+  .gala-curtain--right .gala-curtain__fold {
+    box-shadow: 3px 0 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
 /* ---------- Layout ---------- */
 
 .gala {

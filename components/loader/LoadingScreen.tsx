@@ -58,6 +58,14 @@ const FADE_OUT_MS = 1400;
 // otherwise restart every CSS animation — the curtains close and part a second time.
 let runStart: number | null = null;
 
+// Stamped by an inline script in the server HTML as the loader is parsed, so the run's start
+// survives even when React discards the server DOM before any effect runs (hydration fallback)
+const RUN_START_KEY = '__galaRunStart';
+const RUN_START_SCRIPT = `window.${RUN_START_KEY}=performance.now()`;
+
+// A rebuilt animation is this far behind the run before it gets fast-forwarded
+const RESYNC_SLACK_MS = 120;
+
 // Entrance timeline (ms). CSS-delay driven so it plays from first paint, before hydration.
 // The velvet curtains part first; everything else enters as they open.
 const T = {
@@ -162,23 +170,24 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
     };
   }, []);
 
-  // Before paint: anchor the run to first paint, or fast-forward a rebuilt DOM to it
+  // Before paint: anchor the run to first paint, and fast-forward any rebuilt DOM to it
   useLayoutEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const animations = root.getAnimations({ subtree: true });
     const now = performance.now();
     if (runStart === null) {
-      // Server markup has been animating since first paint; fresh client markup starts now
-      const started = animations
-        .map((a) => a.startTime)
-        .filter((t): t is number => typeof t === 'number');
-      runStart = started.length > 0 ? Math.min(...started) : now;
-    } else {
-      elapsedRef.current = Math.max(0, now - runStart);
-      for (const a of animations) {
-        a.currentTime = (Number(a.currentTime) || 0) + elapsedRef.current;
-      }
+      const w = window as unknown as Record<string, unknown>;
+      const stamped = w[RUN_START_KEY];
+      runStart = typeof stamped === 'number' && stamped <= now ? stamped : now;
+      // A later client-side run (navigation back) has no script stamp and starts fresh
+      delete w[RUN_START_KEY];
+    }
+    elapsedRef.current = Math.max(0, now - runStart);
+    const root = rootRef.current;
+    if (!root || elapsedRef.current < RESYNC_SLACK_MS) return;
+    for (const a of root.getAnimations({ subtree: true })) {
+      // Only CSS keyframes — leave JS-driven (motion) animations alone
+      if (typeof CSSAnimation !== 'undefined' && !(a instanceof CSSAnimation)) continue;
+      const t = Number(a.currentTime) || 0;
+      if (elapsedRef.current - t > RESYNC_SLACK_MS) a.currentTime = elapsedRef.current;
     }
   }, []);
 
@@ -221,6 +230,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
       aria-label="Loading invitation"
       style={{ pointerEvents: fadeOut ? 'none' : 'auto' }}
     >
+      {/* Runs only from the server HTML (React never executes client-rendered scripts) */}
+      <script dangerouslySetInnerHTML={{ __html: RUN_START_SCRIPT }} suppressHydrationWarning />
       {/* Same photo marquee as the envelope hero, softly blurred under a red-velvet tint */}
       {backgroundPhotos.length > 0 && (
         <div className="gala-marquee" aria-hidden="true">
