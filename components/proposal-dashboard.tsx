@@ -3,7 +3,8 @@
 import { celebrantName } from "@/lib/celebrant"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { Cinzel, Playfair_Display } from "next/font/google"
+import { Playfair_Display } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import {
   Copy,
   ExternalLink,
@@ -36,7 +37,6 @@ import {
 } from "@/lib/proposal-mixed-text"
 import { ShareSheet } from "@/components/share-platforms"
 
-const cinzel = Cinzel({ subsets: ["latin"], weight: ["500", "600"] })
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["500", "600"] })
 
 const PLAYFUL_ROLE_IDS = new Set(["flower-girl", "ring-bearer", "coin-bearer", "bible-bearer", "herald-bearer"])

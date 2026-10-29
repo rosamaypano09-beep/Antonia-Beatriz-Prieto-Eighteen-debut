@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Ghost marquee — outlined serif caps drifting along both screen edges.
+   Shared by the loading screen and the envelope screen; each places it with
+   its own modifier class (position, z-index, fade-in).
+   ========================================================================== */
+
+.ghost-marquee {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Fade out top and bottom so the columns never end in a hard edge */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 82%, transparent 100%);
+}
+.ghost-marquee__col {
+  --ghost-size: clamp(3.4rem, 17vw, 7rem);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--ghost-size);
+  overflow: hidden;
+}
+/* Left column is turned so it reads bottom → top, like the spine of a book */
+.ghost-marquee__col--left {
+  left: calc(var(--ghost-size) * -0.3);
+  transform: rotate(180deg);
+}
+.ghost-marquee__col--right {
+  right: calc(var(--ghost-size) * -0.3);
+}
+.ghost-marquee__track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  animation: ghost-marquee-drift 46s linear infinite;
+}
+/* The track always drifts up; the left column is rotated 180°, so on screen
+   the left text moves down and the right text moves up */
+.ghost-marquee__col--right .ghost-marquee__track {
+  animation-duration: 52s;
+}
+.ghost-marquee__track span {
+  display: block;
+  flex: none;
+  writing-mode: vertical-rl;
+  white-space: pre;
+  font-size: var(--ghost-size);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(243, 220, 159, 0.05);
+  -webkit-text-stroke: 1px rgba(243, 220, 159, 0.26);
+}
+/* Wider screens: the content is narrower than the viewport, so the columns can show in full */
+@media (min-width: 760px) {
+  .ghost-marquee__col--left {
+    left: 2vw;
+  }
+  .ghost-marquee__col--right {
+    right: 2vw;
+  }
+}
+@keyframes ghost-marquee-drift {
+  to {
+    transform: translateY(-50%);
+  }
+}
+.ghost-marquee.is-still,
+.ghost-marquee.is-still .ghost-marquee__track {
+  animation: none;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ghost-marquee,
+  .ghost-marquee__track {
+    animation: none !important;
+    opacity: 1;
+  }
+}
+
+/* Page sections (Details, Entourage, Book of Guests, FAQ): behind the cards,
+   above the red circle pattern */
+.ghost-marquee.section-ghost {
+  position: absolute;
+  z-index: 1;
+  /* softer fade at the ends of a long section */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 4%, #000 96%, transparent 100%);
+}

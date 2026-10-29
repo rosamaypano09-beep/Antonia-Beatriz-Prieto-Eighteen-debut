@@ -6,19 +6,17 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import localFont from "next/font/local"
 import { Section } from "@/components/section"
 import { sectionType } from "@/lib/section-typography"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { fetchUntilReady, isAbortError } from "@/lib/fetch-until-ready"
 import { fetchInvitationList, readCachedInvitationList } from "@/lib/invitation-data"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { RisingMotes } from "@/components/rising-motes"
+import { GhostMarquee } from "@/components/loader/GhostMarquee"
+import { ghostTextFor } from "@/lib/ghost-text"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -757,6 +755,13 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
       <RisingMotes count={60} />
+      {/* Ghost lettering down the left edge and up the right (same as the loading screen) */}
+      <GhostMarquee
+        text={ghostTextFor(siteConfig)}
+        className="section-ghost"
+        fontClassName={theSeasons.className}
+        repeat={10}
+      />
       <Section
         id="entourage"
         className="relative z-10 overflow-hidden pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-12 lg:pt-14 lg:pb-14"

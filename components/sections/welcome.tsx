@@ -5,12 +5,8 @@ import { motion } from "motion/react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { fillCelebrant } from "@/lib/celebrant"
 import { sectionType, welcomeTitleSize } from "@/lib/section-typography"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",

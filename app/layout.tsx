@@ -1,13 +1,13 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Great_Vibes, Inter, Imperial_Script, Cinzel } from "next/font/google"
+import { Great_Vibes, Inter, Imperial_Script } from "next/font/google"
 import localFont from "next/font/local"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { siteConfig, canonicalSiteUrl } from "@/content/site"
 import { ClientLayout } from "@/components/client-layout"
 import { LOADING_BG_PHOTOS } from "@/lib/loading-bg-photos"
-import { anastasiaScript } from "@/lib/fonts"
+import { anastasiaScript, cinzel } from "@/lib/fonts"
 
 const canonicalUrl = canonicalSiteUrl
 // One absolute https URL for the share image — Messenger ignores relative / mismatched ones
@@ -23,7 +23,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
   name: `${celebrant}'s Debut`,
-  startDate: "2027-02-20T15:45:00+08:00",
+  startDate: "2026-11-22T17:00:00+08:00", // ⚠ check — keep in step with EVENT_DATE + guest arrival in content/site.ts
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   location: {
@@ -32,7 +32,6 @@ const jsonLd = {
     address: {
       "@type": "PostalAddress",
       streetAddress: siteConfig.ceremony.venue,
-      addressLocality: "Quezon City",
       addressRegion: "Metro Manila",
       addressCountry: "PH",
     },
@@ -49,7 +48,6 @@ const jsonLd = {
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400", variable: "--font-serif" })
 const imperialScript = Imperial_Script({ subsets: ["latin"], weight: "400", variable: "--font-imperial-script" })
-const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-cinzel" })
 const brittany = localFont({
   src: "../Font/brittany-signature-script/BrittanySignatureScript.ttf",
   variable: "--font-brittany",
@@ -161,7 +159,6 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=yes,email=no,address=no" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&display=swap" rel="stylesheet" />

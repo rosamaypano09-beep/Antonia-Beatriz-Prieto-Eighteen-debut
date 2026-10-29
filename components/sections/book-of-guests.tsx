@@ -4,19 +4,17 @@ import { useState, useEffect } from "react"
 import { RefreshCw, Users, Armchair, Crown } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react"
 import localFont from "next/font/local"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { fetchInvitationList } from "@/lib/invitation-data"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { RisingMotes } from "@/components/rising-motes"
+import { GhostMarquee } from "@/components/loader/GhostMarquee"
+import { ghostTextFor } from "@/lib/ghost-text"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 // The Seasons (demo) has no clean number glyphs — set any digits in Cinzel
 function DigitsInCinzel({ text }: { text: string }) {
@@ -345,6 +343,14 @@ export function BookOfGuests() {
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
       <RisingMotes count={50} />
+      {/* Ghost lettering down the left edge and up the right (same as the loading screen) */}
+      <GhostMarquee
+        text={ghostTextFor(siteConfig)}
+        className="section-ghost"
+        fontClassName={theSeasons.className}
+        still={!!reduceMotion}
+        repeat={4}
+      />
 
       {/* Corner decorations (from site.ts) */}
 

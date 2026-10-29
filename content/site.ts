@@ -76,8 +76,8 @@ export type AttireColor = string | { name: string; hex: string }
 
 // ── The celebrant ───────────────────────────────────────────────────────────
 const CELEBRANT = {
-  fullName: "Basha Alexa Tidon", // Add surname only if provided
-  nickname: "Basha", // Used everywhere as {celebrant}
+  fullName: "Antonia Beatriz Prieto", // Add surname only if provided
+  nickname: "Bea", // Used everywhere as {celebrant}
   age: "18",
   ageWords: "Eighteen",
   title: "Debutante",
@@ -86,7 +86,7 @@ const CELEBRANT = {
 // ── Event details (from the client brief) ───────────────────────────────────
 const EVENT = {
   type: "18th Birthday",
-  theme: "Luxury Fashion Gala",
+  theme: "An Evening of Roses & Gold",
   motif: "Red Roses, Black Elegance, Champagne Gold Accents",
   colors: "Luxury Red, Deep Black, Champagne Gold, Soft Ivory",
   themeSong: {
@@ -96,30 +96,25 @@ const EVENT = {
 }
 
 // ── Date & times ────────────────────────────────────────────────────────────
-const EVENT_DATE = "February 20, 2027"
-const EVENT_DAY = "Saturday"
+const EVENT_DATE = "November 22, 2026"
+const EVENT_DAY = "Sunday"
 
 const TIMES = {
-  guestArrival: "3:45 PM", // Call time
-  program: "4:00 PM", // Program proper — countdown target
+  guestArrival: "5:00 PM", // Call time
+  program: "5:30 PM", // Program proper — countdown target
   end: "", // Add confirmed event end time
 }
 
 // ── Venue ───────────────────────────────────────────────────────────────────
 const VENUE = {
-  name: "Angelica's Catering",
-  address:
-    "42 N. Ramirez St., cor. Matimyas St., Brgy. Don Manuel, Quezon City",
-  map: "https://maps.app.goo.gl/HN8e51pKYfmSieZ16", // Google Maps pin (directions button + QR)
-  // Step-by-step directions (Event Details card + FAQ)
-  directions: [
-    "From Quiapo / UST, go straight along España Blvd. towards the Welcome Rotonda / Quezon Ave.",
-    "At the right side of the rotonda is UDMC Hospital — turn right immediately onto N. Ramirez St. (For commuters, there's a trike terminal beside UDMC.)",
-    "Go straight along N. Ramirez St. About 100 meters from UDMC, Angelica's Catering is on the right side, at the corner of Matimyas St.",
-  ],
-  landmarks: ["UDMC Hospital", "Bulaluhan sa Ramirez"],
-  // Add confirmed venue photos when available
-  photos: [ "/Details/reception (1).jpg", "/Details/reception (2).jpg", "/Details/reception (3).jpg" ] as string[],
+  name: "Venue To Follow", // ⚠ check — replace once the family confirms the venue
+  address: "Location details to follow",
+  map: "", // Google Maps pin (directions button + QR); "" hides the map QR and buttons
+  // Step-by-step directions (FAQ) — add once the venue is confirmed
+  directions: [] as string[],
+  landmarks: [] as string[],
+  // Add confirmed venue photos when available ([] shows the gold monogram panel)
+  photos: [] as string[],
 }
 const CEREMONY_VENUE = VENUE
 const RECEPTION_VENUE = VENUE
@@ -164,14 +159,14 @@ const VENUE_CARDS = {
 // ── RSVP & contact ──────────────────────────────────────────────────────────
 const RSVP = {
   deadline: "", // Add confirmed RSVP deadline
-  coordinator: "Basha's Family",
-  phone: "0942 569 3287", // Basha
-  alternatePhone: "0924 136 4683", // Nela
+  coordinator: "Bea's Family",
+  phone: "0942 569 3287", // ⚠ check — carried over from the previous invitation
+  alternatePhone: "0924 136 4683", // ⚠ check — carried over from the previous invitation
 }
 
 const HASHTAGS = [
-  "#BashaTurns18",
-  "#BashasFashionGala",
+  "#BeaTurns18", // ⚠ check — confirm with the family
+  "#BeautifullyBea18",
 ]
 // ── Attire guide (Event Details → Attire Guidelines) ────────────────────────
 // SHOW = which cards to display AND their order, top to bottom. Examples:
@@ -185,7 +180,16 @@ const HASHTAGS = [
 //     label:     e.g. "Ladies", "Gentlemen" — leave "" to hide the heading (good for one inclusive blurb)
 //     details:   the dress code text ("" hides this half of the card)
 //     highlight: phrase inside details shown bold + underlined ("" for none)
-// Brief: dress to impress — any color except red (reserved for the debutante)
+// Dress code: the evening's colors — burgundy, red, black, and gold (DRESS_PALETTE)
+
+// Dress code colors, sampled from public/Details/attire.png — the attire card shows
+// them with names, the Dress Code reminder shows the same strip without names
+const DRESS_PALETTE: AttireColor[] = [
+  { name: "Burgundy", hex: "#6A1420" }, // the suits
+  { name: "Red", hex: "#961B22" }, // the gowns + roses
+  { name: "Black", hex: "#2B2526" }, // shirts, ties, shoes (warm black)
+  { name: "Gold", hex: "#C6A15B" }, // accents
+]
 
 const ATTIRE = {
   show: ["guests"] as AttireGroupId[], // one dress code for everyone
@@ -197,13 +201,13 @@ const ATTIRE = {
     ladies: {
       label: "Ladies",
       details:
-        "Elegant formal gowns or cocktail dresses in champagne gold, ivory, black, silver, or other colors except red.",
+        "Elegant formal gowns or cocktail dresses in burgundy, red, black, or gold.",
       highlight: "Formal Gowns",
     },
     gentlemen: {
       label: "Gentlemen",
       details:
-        "Formal black suits, tuxedos, or elegant barong with tailored slacks. Any color except red.",
+        "Formal black suits, tuxedos, or elegant barong with tailored slacks, with touches of burgundy, red, or gold.",
       highlight: "Formal Black Suits",
     },
   },
@@ -215,7 +219,7 @@ const ATTIRE = {
     ladies: {
       label: "Ladies",
       details:
-        "Elegant formal gowns or cocktail dresses in champagne gold, ivory, black, silver, or other colors except red. Choose a polished, gala-ready look.",
+        "Elegant formal gowns or cocktail dresses in burgundy, red, black, or gold. Choose a polished, formal look.",
       highlight: "Formal Gowns",
     },
     gentlemen: {
@@ -228,15 +232,15 @@ const ATTIRE = {
 
   guests: {
     title: "", // no heading — this dress code is for everyone
-    image: "/Details/guestAttire.png",
-    palette: [],
+    image: "/Details/attire.png",
+    palette: DRESS_PALETTE,
     // One inclusive blurb (no Ladies / Gentlemen headings); \n starts a new line
     ladies: {
       label: "",
       details:
-        "Wear your most fabulous fashion dress and join us in style!\n\n" +
-        "You are welcome to wear any color of your choice, except for red, which is reserved for our debutante’s grand entrance.",
-      highlight: "except for red",
+        "Come in your most elegant best — formal or semi-formal, whatever makes you feel wonderful.\n\n" +
+        "Please dress in the colors of the evening: burgundy, red, black, or gold.",
+      highlight: "burgundy, red, black, or gold",
     },
     gentlemen: {
       label: "",
@@ -248,7 +252,7 @@ const ATTIRE = {
 
 // ── Website address (used for QR codes, link previews, table finder) ────────
 // NEXT_PUBLIC_SITE_URL (env) overrides this when set.
-const SITE_URL = "https://basha-debut-invitation.weddinginvitationrsvp.com/"
+const SITE_URL = "https://basha-debut-invitation.weddinginvitationrsvp.com/" // ⚠ check — still the previous client's domain
 // Image shown when the link is shared (Facebook, Messenger, Viber, X, …).
 // Messenger is strict: use a JPG exactly 1200×630, under ~300 KB. When you replace it,
 // change the file name (or bump ?v=) so Facebook fetches the new one instead of its cache.
@@ -275,7 +279,7 @@ const DISPLAY_MODE = "photos" as "photos" | "plain"
 
 // ── Shared images ───────────────────────────────────────────────────────────
 const BRAND = {
-  monogram: "/monogram/newmonogram.png", // baroque sun + moon "Y" (tinted per section)
+  monogram: "/monogram/new-monogram.png", // botanical "B" (tinted per section)
   // Name lettering image (loader, envelope, proposals). "" = name in script text
   nameImage: "",
   seal: "/monogram/newseal.png", // envelope wax seal
@@ -284,11 +288,11 @@ const BRAND = {
 }
 
 // Celebrant photos used in "photos" mode (loader, envelope, hero, reminders,
-// snap & share, closing) — Yohana's debut shoot in /public/mobile-background.
+// snap & share, closing) — Bea's debut shoot in /public/mobile-background.
 // The /gallery page reads every file in /public/mobile-background and /public/desktop-background.
 const CELEBRANT_PHOTOS = Array.from(
-  { length: 22 },
-  (_, i) => `/mobile-background/debut (${i + 1}).webp`,
+  { length: 4 }, // ⚠ check — raise this as more of Bea's photos are added
+  (_, i) => `/mobile-background/debut (${i + 1}).jpg`,
 )
 // Favorites picked for specific spots (index = file number − 1)
 const PHOTO = (n: number) => CELEBRANT_PHOTOS[n - 1]
@@ -396,11 +400,11 @@ export const siteConfig = {
   },
   // Top hero on the main page (components/sections/hero.tsx)
   hero: {
-    srTitle: "You're invited to Basha's Fashion Gala — her 18th birthday",
-    kicker: "You're invited to", // Small line above the title ("" hides it)
-    titleMain: "{celebrant}’s", // Big serif line
-    titleScript: "Fashion Gala", // Script line overlapping it
-    eyebrow: "Her 18th birthday · A night of glamour, roses & gold",
+    srTitle: "You're invited to the debut of {celebrant} — Antonia Beatriz Prieto turns eighteen",
+    kicker: "You are invited to the debut of", // Small line above the name ("" hides it)
+    titleMain: "{celebrant}", // Nickname in large gold script
+    eyebrow: CELEBRANT.fullName, // Full name in caps under the nickname ("" hides it)
+    titleScript: "turns eighteen", // Script line above the date ("" hides it)
     countdownHeading: "Until {celebrant}'s grand entrance",
     countdownLabels: {
       days: "Days",
@@ -414,8 +418,8 @@ export const siteConfig = {
     title: "Welcome",
     script: "to my eighteenth",
     paragraphs: [
-      "Dear family and friends — eighteen years ago, my story began in your arms. Tonight, under a baroque sun and a silver moon, I step into a brand-new chapter, and there is no one I would rather have beside me than you.",
-      "Inside this invitation you will find everything for the evening: the program, the venue, the dress code, and a few gentle reminders. Come wearing your best — any style, any color except red — and bring your warmest smile for a night of roses, pearls, and music.",
+      "Dear family and friends — eighteen years ago, my story began in your arms. Now I am stepping into a brand-new chapter, and there is no one I would rather have beside me than you.",
+      "Inside this invitation you will find everything for the evening: the program, the venue, the dress code, and a few gentle reminders. Come in your elegant best — in burgundy, red, black, or gold — and bring your warmest smile for a night of roses, candlelight, and music.",
       "Thank you for every lesson, every laugh, and every prayer that carried me here. Sharing this night with the people who shaped me is the most beautiful gift I could ask for.",
     ],
     signOff: "With all my love and gratitude,",
@@ -428,17 +432,21 @@ export const siteConfig = {
     // "photos" = sliding photo background + photo date cards
     // "plain"  = no photos: red velvet backdrop with pearls + engraved date
     display: DISPLAY_MODE,
-    // Fashion-gala poster (red velvet + gold). {celebrant} → nickname; "" hides a line.
+    // Debut poster (red velvet + gold). {celebrant} → nickname; "" hides a line.
     // Date / time / venue in the details row come from ceremony.
     gala: {
-      photo: "/images/debut.webp", // cut-out portrait (transparent background)
-      eyebrow: "You are cordially invited to",
+      photo: "/Details/debutant.png", // cut-out portrait (transparent background)
+      eyebrow: "You are cordially invited to the debut of",
       cardEyebrow: "You're Invited", // top line on the paper card inside the envelope
-      title: "{celebrant}’s",
-      subtitle: "Fashion Gala",
-      taglineLeft: ["A night", "of style.", "A lifetime", "of memories."],
-      taglineRight: ["Style", "People", "Memories", "Forever."],
-      kicker: "You are invited",
+      // Invitation line on the paper card, above the name ("" hides it)
+      cardLine: "Her family joyfully invites you to celebrate the debut of",
+      title: "{celebrant}", // nickname in gold script
+      subtitle: CELEBRANT.fullName, // full name in caps beneath
+      taglineLeft: ["Eighteen years", "of love.", "One night", "to remember."],
+      taglineRight: ["Faith", "Family", "Friends", "Forever."],
+      kicker: "Celebrating her",
+      // Ghost lettering that drifts down the left edge and up the right ([] hides it)
+      ghostText: ["{celebrant}", CELEBRANT.fullName, "Eighteen"],
       occasionNumber: CELEBRANT.age,
       occasionSuffix: "th",
       occasion: "Birthday",
@@ -453,7 +461,7 @@ export const siteConfig = {
     backgroundPhotos: CELEBRANT_PHOTOS,
     // Poster corners: small caps at the very top (left sits beside the monogram). "" hides one.
     topLeft: "The Debut",
-    topRight: "Salon de Ning · The Peninsula",
+    topRight: VENUE.name,
     headline: "Save the Date",
     // {days} is replaced with the number of days left before the debut
     countdownText: "{days} nights until the eighteenth",
@@ -477,8 +485,8 @@ export const siteConfig = {
     },
     // Two numbered highlights, like a poster's "01 / 02" offers ([] hides the row)
     highlights: [
-      { label: "Dress Code", text: "Your best look — any color but red" },
-      { label: "The Night", text: "Pearls, roses & gold" },
+      { label: "Dress Code", text: "Burgundy, red, black & gold" },
+      { label: "The Night", text: "Roses, candlelight & gold" },
     ],
     // Bottom details row — {guestsTime}, {programTime}, {endTime}, {venue} are filled in
     showCeremonyDetails: true,
@@ -489,15 +497,15 @@ export const siteConfig = {
     ],
     // Used by the envelope (components/loader/Hero.tsx)
     eyebrow: "You are invited",
-    message: "A regal night of pearls, roses & gold",
+    message: "An evening of roses, gold & gratitude",
     // Rotates under the progress bar while the invitation loads
     statusMessages: [
-      "Draping the red velvet",
-      "Stringing the pearls",
       "Arranging eighteen roses",
-      "Lighting the baroque sun",
+      "Lighting eighteen candles",
+      "Setting the tables",
+      "Saving your seat",
     ],
-    durationMs: 10000,
+    durationMs: 8000, // minimum — longer only if the files are still loading
     // Invitation envelope (components/loader/Hero.tsx) — shares display + photos with loader above
     hintText: "Tap the Seal to Open",
     enterButtonText: "View the Invitation",
@@ -508,7 +516,7 @@ export const siteConfig = {
   // Plain mode shows each note as a card; photos mode adds the chapter image.
   loveStory: {
     title: "My Story",
-    subtitle: "eighteen years, eighteen chapters",
+    subtitle: "four chapters, eighteen years",
     // Word before each card's number, e.g. "Chapter 01"
     chapterLabel: "Chapter",
     closingQuote:
@@ -520,187 +528,52 @@ export const siteConfig = {
       timelineTop: DECOR.headerOrnament,
       sectionBottom: DECOR.footerVine,
     },
-    // Eighteen chapters, one for each year (PHOTO(n) = public/mobile-background/debut (n).webp)
+    // Four chapters, one per photo (PHOTO(n) = public/mobile-background/debut (n).jpg).
+    // Keep each to one or two short paragraphs so the cards stay light on phones.
     chapters: [
       {
-        // 1 — year 1
+        // 1 — the beginning
         title: "Where It All Began",
         theme: "light" as const,
         layout: "image-left" as const,
-        image: "/mobile-background/debut (56).webp",
+        image: PHOTO(1),
         paragraphs: [
-          "Eighteen years ago, a little girl arrived with wide eyes and a big heart. Every story worth telling begins with love — and mine began with all of you.",
+          "Eighteen years ago, a little girl arrived and was named Antonia Beatriz — though to everyone who loves her, she has always simply been Bea.",
+          "Every story worth telling begins with love, and mine began in the arms of the family who has carried me ever since.",
         ],
       },
       {
-        // 2 — year 2
-        title: "Little Steps, Big Dreams",
+        // 2 — growing up
+        title: "Growing Up, Little by Little",
         theme: "dark" as const,
         layout: "image-right" as const,
-        image: "/mobile-background/debut (85).webp",
+        image: PHOTO(2),
         paragraphs: [
-          "From wobbly first steps to my very first words, you were there to catch me when I fell and cheer me on every time I tried again.",
+          "First steps and first days of school, scraped knees and late-night homework, big questions and even bigger dreams.",
+          "Through every stage, you taught me to be kind, to keep going, and to laugh at the little things along the way.",
         ],
       },
       {
-        // 3 — year 3
-        title: "Bedtime Stories",
+        // 3 — the people
+        title: "The People Who Shaped Me",
         theme: "light" as const,
         layout: "image-left" as const,
-        image: "/mobile-background/debut (8).webp",
+        image: PHOTO(3),
         paragraphs: [
-          "Lullabies, goodnight kisses, and stories read twice over — those quiet nights taught me that I was safe, cherished, and loved.",
+          "To my family, thank you for the quiet sacrifices and the love that never ran out. To my friends, thank you for turning ordinary days into my favorite memories.",
+          "And to God, who has been faithful in every season — every prayer whispered for me has brought me here.",
         ],
       },
       {
-        // 4 — year 4
-        title: "The Curious Years",
+        // 4 — tonight
+        title: "A New Chapter Begins",
         theme: "dark" as const,
         layout: "image-right" as const,
-        image: "/mobile-background/debut (17).webp",
+        image: PHOTO(4),
         paragraphs: [
-          "I asked a thousand questions and chased a thousand butterflies. Thank you for answering every one with patience and a smile.",
-        ],
-      },
-      {
-        // 5 — year 5
-        title: "First Day of School",
-        theme: "light" as const,
-        layout: "image-left" as const,
-        image: "/mobile-background/debut (25).webp",
-        paragraphs: [
-          "A brand-new bag, a nervous wave goodbye, and a heart full of wonder. That first day opened the door to everything I would learn.",
-        ],
-      },
-      {
-        // 6 — year 6
-        title: "Lessons Along the Way",
-        theme: "dark" as const,
-        layout: "image-right" as const,
-        image: "/mobile-background/debut (89).webp",
-        paragraphs: [
-          "Classrooms, projects, and late-night studying taught me that patience, hard work, and a little courage can carry you further than you imagine.",
-        ],
-      },
-      {
-        // 7 — year 7
-        title: "Make-Believe and Wonder",
-        theme: "light" as const,
-        layout: "image-left" as const,
-        image: "/mobile-background/debut (91).webp",
-        paragraphs: [
-          "Castles made of blankets and adventures made of daydreams — my imagination grew wings because you let me dream out loud.",
-        ],
-      },
-      {
-        // 8 — year 8
-        title: "Friends Who Became Family",
-        theme: "dark" as const,
-        layout: "image-right" as const,
-        image: "/mobile-background/debut (86).webp",
-        paragraphs: [
-          "To the friends who laughed with me, cried with me, and stayed through it all — you turned ordinary days into my favorite memories.",
-        ],
-      },
-      {
-        // 9 — year 9
-        title: "Little Adventures",
-        theme: "light" as const,
-        layout: "image-left" as const,
-        image: "/mobile-background/debut (26).webp",
-        paragraphs: [
-          "Road trips, rainy afternoons, and spontaneous plans showed me that the best moments are the ones we share with the people we love.",
-        ],
-      },
-      {
-        // 10 — year 10
-        title: "Faith That Carried Me",
-        theme: "dark" as const,
-        layout: "image-right" as const,
-        image: "/mobile-background/debut (33).webp",
-        paragraphs: [
-          "Through every season, God has been faithful. In every prayer whispered on my behalf, I felt His love through the people around me.",
-        ],
-      },
-      {
-        // 11 — year 11
-        title: "Growing Pains",
-        theme: "light" as const,
-        layout: "image-left" as const,
-        image: "/mobile-background/debut (38).webp",
-        paragraphs: [
-          "Not every chapter was easy. There were tears and doubts, but each one taught me that I am stronger than I once believed.",
-        ],
-      },
-      {
-        // 12 — year 12
-        title: "Finding My Voice",
-        theme: "dark" as const,
-        layout: "image-right" as const,
-        image: "/mobile-background/debut (37).webp",
-        paragraphs: [
-          "Little by little, I learned to speak up, to stand tall, and to share the things that make my heart come alive.",
-        ],
-      },
-      {
-        // 13 — year 13
-        title: "The Heart of Home",
-        theme: "light" as const,
-        layout: "image-left" as const,
-        image: "/mobile-background/debut (55).webp",
-        paragraphs: [
-          "To my family — thank you for the quiet sacrifices, the endless patience, and the love that showed me who I want to become.",
-        ],
-      },
-      {
-        // 14 — year 14
-        title: "Dreams in Bloom",
-        theme: "dark" as const,
-        layout: "image-right" as const,
-        image: "/mobile-background/debut (63).webp",
-        paragraphs: [
-          "The dreams I once kept to myself are slowly taking shape. I cannot wait to see where they lead — and I hope you will be there to see it.",
-        ],
-      },
-      {
-        // 15 — year 15
-        title: "Strength in Every Season",
-        theme: "light" as const,
-        layout: "image-left" as const,
-        image: "/mobile-background/debut (41).webp",
-        paragraphs: [
-          "Through sunny days and stormy nights, I learned that grace grows in every season, and that kindness is always worth choosing.",
-        ],
-      },
-      {
-        // 16 — year 16
-        title: "Becoming Me",
-        theme: "dark" as const,
-        layout: "image-right" as const,
-        image: "/mobile-background/debut (81).webp",
-        paragraphs: [
-          "Growing up has meant learning to be brave, to be kind, and to be myself, even when it was not easy. I am still learning — and grateful for every lesson.",
-        ],
-      },
-      {
-        // 17 — year 17
-        title: "With a Grateful Heart",
-        theme: "light" as const,
-        layout: "image-left" as const,
-        image: "/mobile-background/debut (6).webp",
-        paragraphs: [
-          "Every lesson, every laugh, and every prayer brought me here. I carry each of you with me as I step into what comes next.",
-        ],
-      },
-      {
-        // 18 — year 18
-        title: "A New Chapter Tonight",
-        theme: "dark" as const,
-        layout: "image-right" as const,
-        image: "/mobile-background/debut (3).webp",
-        paragraphs: [
-          "Under the spotlight of my very own fashion gala, I step into eighteen with a full heart. Your presence is my greatest gift — come dressed to shine, raise a toast, and celebrate with me.",
-          "With love and gratitude, {celebrant}",
+          "Now I step into eighteen with a grateful heart, and there is no one I would rather celebrate with than you.",
+          "Come raise a toast, share a dance, and help me begin this new chapter surrounded by love.",
+          "With all my love, {celebrant}",
         ],
       },
     ],
@@ -744,59 +617,31 @@ export const siteConfig = {
     },
     attire: {
       title: "Attire Guidelines",
-      description: "It's a Fashion Gala birthday — come dressed to dazzle.",
+      description: "Formal and elegant — come dressed for a night to remember.",
       paletteTitle: "Dress Code Palette",
-      paletteSubtitle: "Any Color Except Red",
-      colorGuideTitle: "Color Guide",
-      colorGuideNote:
-        "There is no set palette — every color is welcome except red, which is reserved for the debutante. How dressy you go is entirely up to you.",
+      paletteSubtitle: "Burgundy · Red · Black · Gold",
+      colorGuideTitle: "The Evening's Colors",
+      colorGuideNote: "Choose any one, or pair them together — deep burgundy, rich reds, classic black, and a touch of gold.",
       // Order and visibility come from ATTIRE.show (skips blanks, typos and repeats)
       groups: ATTIRE.show
         .filter((id, i, list) => ["sponsors", "entourage", "guests"].includes(id) && list.indexOf(id) === i)
         .map((id) => ({ id, ...ATTIRE[id] })),
-      palette: [] as AttireColor[], // no dress code palette
-    },
-    // "How to get there" card under the venue (steps + landmarks come from VENUE)
-    directions: {
-      title: "How to Get There",
-      subtitle: `Directions to ${VENUE.name}`,
-      steps: VENUE.directions,
-      landmarksLabel: "Landmarks",
-      landmarks: VENUE.landmarks,
-      address: VENUE.address,
-      // Illustrated route map (wide) + street-level photo of the turn at UDMC
-      mapImage: {
-        src: "/Details/imagemapdirection.jpg",
-        alt: "Illustrated map from Welcome Rotonda along España Blvd., right onto N. Ramirez St. to Angelica's Catering",
-        caption: "Route Map",
-      },
-      streetImage: {
-        src: "/Details/imageDirection.jpg",
-        alt: "Street view on España Blvd. near Welcome Rotonda showing the right turn at UDMC Hospital onto N. Ramirez St.",
-        caption: "Turn right at UDMC Hospital",
-      },
-      enlargeHint: "Tap to enlarge",
+      palette: DRESS_PALETTE, // shown (without names) in the Dress Code reminder
     },
     reminders: {
       title: "Gentle Reminders",
       description: "A few thoughtful notes so everyone can enjoy the night.",
-      // 5 photos: the 1st sits in the center of the deck, two fan out on each side
-      images: [
-        "/box/box (1).png", // front card
-        "/box/box (2).jpg",
-        "/box/box (3).jpg",
-        "/box/box (4).jpg",
-        "/box/box (5).png",
-      ],
+      // Shown as 9:16 portrait cards; the 1st sits in front, the rest fan out behind it
+      images: [PHOTO(1), PHOTO(2), PHOTO(3), PHOTO(4)],
       // showPalette: shows the dress code palette after the first paragraph
       items: [
         {
           title: "Dress Code",
           variant: "accent" as "accent" | "soft",
-          showPalette: false,
+          showPalette: true, // color strip after the first paragraph
           paragraphs: [
-            "Wear your most fabulous fashion dress and join us in style!",
-            "You are welcome to wear any color of your choice, except for red, which is reserved for our debutante’s grand entrance.",
+            "Come in your most elegant best — formal or semi-formal, whatever makes you feel wonderful.",
+            "Please dress in the colors of the evening: burgundy, red, black, or gold.",
           ],
         },
         {
@@ -816,11 +661,11 @@ export const siteConfig = {
           ],
         },
         {
-          title: "After Glow",
+          title: "After Party",
           variant: "soft" as "accent" | "soft",
           showPalette: false,
           paragraphs: [
-            "Stay for the after glow from 6:30 PM — dance, mingle, and celebrate with me until the very last song.",
+            "Stay for the after party from 8:30 PM — dance, laugh, and celebrate with me until the very last song.",
           ],
         },
       ],
@@ -833,7 +678,7 @@ export const siteConfig = {
     title: "Program",
     subtitle: "the night unfolds",
     description:
-      "From the first welcome to the final farewell, here is how we will spend this regal night together.",
+      "From the first welcome to the final farewell, here is how the evening will unfold.",
     quote: "She is clothed in strength and dignity, and she laughs without fear of the future.",
     quoteCitation: "Proverbs 31:25",
     // Optional corner decorations — leave "" to hide
@@ -851,11 +696,12 @@ export const siteConfig = {
     //   icon:     "sun" | "moon" | "crown" | "rose" | "gift" | "toast" | "candle" |
     //             "music" | "video" | "dinner" | "arrival" | "dance" | "departure" | …
     //   description: optional extra line ("" to hide)
+    // ⚠ check — placeholder program for Bea's debut; replace with the family's final flow
     events: [
       {
         show: true,
-        time: "3:45 – 4:00 PM",
-        title: "Ingress of Guests",
+        time: "5:00 – 5:30 PM",
+        title: "Arrival of Guests",
         description: "",
         location: "",
         image: "/debut-timeline/message.png",
@@ -863,25 +709,16 @@ export const siteConfig = {
       },
       {
         show: true,
-        time: "4:00 – 4:30 PM",
-        title: "Welcoming & Introduction of the Debutante",
+        time: "5:30 – 5:45 PM",
+        title: "Opening Prayer & Welcome Remarks",
         description: "",
         location: "",
-        image: "/debut-timeline/welcome-remarks.png",
+        image: "/debut-timeline/Invocation.png",
         icon: "sun" as TimelineIconName,
       },
       {
         show: true,
-        time: "4:30 – 4:45 PM",
-        title: "Performance",
-        description: "",
-        location: "",
-        image: "/debut-timeline/debutant-speech.png",
-        icon: "music" as TimelineIconName,
-      },
-      {
-        show: true,
-        time: "4:45 – 4:55 PM",
+        time: "5:45 – 5:55 PM",
         title: "Pre-Debut Video",
         description: "",
         location: "",
@@ -890,8 +727,8 @@ export const siteConfig = {
       },
       {
         show: true,
-        time: "4:55 – 5:00 PM",
-        title: "Entrance of the Debutante",
+        time: "5:55 – 6:05 PM",
+        title: "Grand Entrance of the Debutante",
         description: "",
         location: "",
         image: "/debut-timeline/assembly.png",
@@ -899,35 +736,8 @@ export const siteConfig = {
       },
       {
         show: true,
-        time: "5:00 – 5:30 PM",
-        title: "18 Roses · 18 Cheers",
-        description: "",
-        location: "",
-        image: "/debut-timeline/18roses-candle-lighting.png",
-        icon: "rose" as TimelineIconName,
-      },
-      {
-        show: true,
-        time: "5:30 – 5:40 PM",
-        title: "Blowing of Candle & Toast",
-        description: "",
-        location: "",
-        image: "/debut-timeline/Invocation.png",
-        icon: "candle" as TimelineIconName,
-      },
-      {
-        show: true,
-        time: "5:40 – 6:30 PM",
-        title: "Food & Socializing",
-        description: "",
-        location: "",
-        image: "/debut-timeline/dinner.png",
-        icon: "dinner" as TimelineIconName,
-      },
-      {
-        show: true,
-        time: "6:30 – 8:30 PM",
-        title: "After Glow",
+        time: "6:05 – 6:20 PM",
+        title: "Cotillion de Honor",
         description: "",
         location: "",
         image: "/debut-timeline/dance-party.png",
@@ -935,8 +745,53 @@ export const siteConfig = {
       },
       {
         show: true,
-        time: "8:30 PM onwards",
-        title: "Egress",
+        time: "6:20 – 6:50 PM",
+        title: "18 Roses",
+        description: "",
+        location: "",
+        image: "/debut-timeline/18roses-candle-lighting.png",
+        icon: "rose" as TimelineIconName,
+      },
+      {
+        show: true,
+        time: "6:50 – 7:15 PM",
+        title: "18 Candles & 18 Treasures",
+        description: "",
+        location: "",
+        image: "/debut-timeline/18roses-candle-lighting.png",
+        icon: "candle" as TimelineIconName,
+      },
+      {
+        show: true,
+        time: "7:15 – 7:30 PM",
+        title: "Message from the Debutante & Toast",
+        description: "",
+        location: "",
+        image: "/debut-timeline/debutant-speech.png",
+        icon: "toast" as TimelineIconName,
+      },
+      {
+        show: true,
+        time: "7:30 – 8:30 PM",
+        title: "Dinner",
+        description: "",
+        location: "",
+        image: "/debut-timeline/dinner.png",
+        icon: "dinner" as TimelineIconName,
+      },
+      {
+        show: true,
+        time: "8:30 – 10:00 PM",
+        title: "After Party",
+        description: "",
+        location: "",
+        image: "/debut-timeline/dance-party.png",
+        icon: "dance" as TimelineIconName,
+      },
+      {
+        show: true,
+        time: "10:00 PM",
+        title: "Farewell & Thank You",
         description: "",
         location: "",
         image: "/debut-timeline/end-program.png",
@@ -950,7 +805,7 @@ export const siteConfig = {
   entourage: {
     // ⚠ Shown on request while googleAPI.entourage still points to the template's
     // sheet — it lists a previous client's wedding party (Parents of the Groom/Bride,
-    // Best Man, …). Swap in Yohana's own sheet before sharing the invitation.
+    // Best Man, …). Swap in Bea's own sheet before sharing the invitation.
     show: true,
     eyebrow: "My Eighteen",
     title: "The Entourage",
@@ -1007,7 +862,7 @@ export const siteConfig = {
     headerOrnament: DECOR.headerOrnament, // "" to hide
     title: "RSVP",
     script: "Will you be there",
-    intro: "Kindly confirm your attendance so a seat can be saved for you on this regal night.",
+    intro: "Kindly confirm your attendance so a seat can be saved for you on this special night.",
     deadlineLabel: "RSVP Deadline",
     openButton: "Tap here to respond",
     search: {
@@ -1175,7 +1030,7 @@ export const siteConfig = {
     title: "Frequently Asked Questions",
     subtitle: "everything you need to know",
     description:
-      "A few gentle notes so you can simply arrive, celebrate, and enjoy this regal night with me.",
+      "A few gentle notes so you can simply arrive, celebrate, and enjoy the night with me.",
     decos: { ...SECTION_DECOS },
     // In answers: {deadline}, {coordinator}, {contact}, {celebrant}, {guestsTime},
     // {programTime}, {endTime}, {venueName}, {venueAddress} are filled in, and
@@ -1189,7 +1044,7 @@ export const siteConfig = {
       {
         question: "What should I wear?",
         answer:
-          "Wear your most fabulous fashion dress and join us in style!\n\nYou are welcome to wear any color of your choice, except for red, which is reserved for our debutante’s grand entrance.\n\nSee the [Attire Guidelines](#details) for inspiration.",
+          "Come in your most elegant best — formal or semi-formal, whatever makes you feel wonderful.\n\nPlease dress in the colors of the evening: burgundy, red, black, or gold.\n\nSee the [Attire Guidelines](#details) for more.",
       },
       {
         question: "What time should I arrive?",
@@ -1199,16 +1054,7 @@ export const siteConfig = {
       {
         question: "Where is the celebration?",
         answer:
-          "{venueName}, {venueAddress}. You'll find the map, directions, and a QR code in [Event Details](#details).",
-      },
-      {
-        question: "How do I get to Angelica's Catering?",
-        answer:
-          "1. From Quiapo / UST, go straight along España Blvd. towards the Welcome Rotonda / Quezon Ave.\n" +
-          "2. At the right side of the rotonda is UDMC Hospital — turn right immediately onto N. Ramirez St. (For commuters, there's a trike terminal beside UDMC.)\n" +
-          "3. Go straight along N. Ramirez St. About 100 meters from UDMC, Angelica's Catering is on the right side, at the corner of Matimyas St.\n\n" +
-          "Landmarks:\n• UDMC Hospital\n• Bulaluhan sa Ramirez\n\n" +
-          "42 N. Ramirez St. cor. Matimyas St., Brgy. Don Manuel, Quezon City — [Open in Google Maps](https://maps.app.goo.gl/HN8e51pKYfmSieZ16)",
+          "The venue will be announced soon. We'll update this invitation with the address, map, and directions — please check back in [Event Details](#details).",
       },
       {
         question: "May I bring a plus one?",
@@ -1223,7 +1069,7 @@ export const siteConfig = {
       {
         question: "Is parking available?",
         answer:
-          "Parking around N. Ramirez St. can be limited, so please allow a few extra minutes to park and make your way to the venue. A ride-share or the trike beside UDMC Hospital are easy alternatives.",
+          "Parking details will be shared together with the venue. Please allow a few extra minutes to park and make your way in.",
       },
       {
         question: "May I take photos and videos?",
@@ -1233,7 +1079,7 @@ export const siteConfig = {
       {
         question: "How long is the celebration?",
         answer:
-          "The program begins at {programTime}, followed by an after glow. The night comes to a close at {endTime}.",
+          "The program begins at {programTime}, followed by dinner and an after party. The night comes to a close at {endTime}.",
       },
       {
         question: "I have dietary restrictions or allergies.",
@@ -1275,9 +1121,11 @@ export const siteConfig = {
     //   qr:    "/QR/BPI.png" to show a QR image, or "" when you have no QR
     showAccounts: true,
     accountsTitle: "For e-gifts",
+    // Small italic note under the QR ("" hides it)
+    accountsNote: "Sample image for display only — not yet official.", // ⚠ check — clear once the real QR codes are in
     accounts: [
-      { show: false, label: "BDO", accountName: "", accountNumber: "", qr: "" },
-      { show: false, label: "GCash", accountName: "", accountNumber: "", qr: "" },
+      { show: true, label: "GCash", accountName: "", accountNumber: "", qr: "/QR/GCASH.png" },
+      { show: true, label: "BDO", accountName: "", accountNumber: "", qr: "/QR/BDO.png" },
     ] as { show: boolean; label: string; accountName: string; accountNumber: string; qr: string }[],
     // Leave any path "" to hide that decoration
     decos: { ...SECTION_DECOS },
@@ -1289,7 +1137,7 @@ export const siteConfig = {
     // {celebrant} → nickname. "" hides a line or image.
     qrCard: {
       coupleNameImage: BRAND.nameImage, // name lettering; "" shows the name as text
-      coupleImage: "/Details/guestAttire.png", // illustration beside the text
+      coupleImage: "/Details/debutantattire.png", // illustration beside the text
       eyebrow: "The debut of",
       title: "Find Your Table",
       script: "please be seated",
@@ -1313,7 +1161,7 @@ export const siteConfig = {
   proposal: {
     decos: { ...CORNER_DECOS },
     coupleNameImage: BRAND.nameImage, // name lettering at the top of the card; "" shows the name as text
-    coupleImage: "/Details/guestAttire.png", // illustration above the question
+    coupleImage: "/Details/debutantattire.png", // illustration above the question
     ornament: DECOR.headerOrnament, // small sprig at the top of the card; "" to hide
     // Eucalyptus sprigs on either side of the couple name; "" to hide one
     nameDecos: { left: DECOR.sideLeft, right: DECOR.sideRight },
@@ -1396,16 +1244,16 @@ export const siteConfig = {
       sponsor: {
         greeting: "Dear",
         intro: [
-          "We have some wonderful news that we would love to share with you.",
+          "I have some wonderful news that I would love to share with you.",
           "I am turning eighteen and will be celebrating my debut — a brand-new chapter of my life.",
         ],
         body: [
           "This is not a general invitation. This is a personal ask, especially meant for you.",
-          "As we prepare for our wedding, we find ourselves thinking about the people we would be grateful to have by our side on one of the most meaningful days of our lives.",
-          "For us, having a {role} is more than simply being part of the wedding ceremony. It means having someone we respect, someone whose experiences we can learn from, and someone whose wisdom and blessings we would be grateful to have as we build our life together.",
+          "As I prepare for my debut, I keep thinking of the people I would be grateful to have by my side on one of the most meaningful nights of my life.",
+          "To me, a {role} is more than a part in the program. It is someone I look up to, someone whose wisdom and blessings I would be grateful to carry with me into adulthood.",
         ],
-        askLead: "With great respect and sincerity, we would like to ask you a very special question:",
-        askNote: "Having you share this moment with us would truly make our wedding more meaningful.",
+        askLead: "With great respect and sincerity, I would like to ask you a very special question:",
+        askNote: "Having you share this moment with me would make my eighteenth truly meaningful.",
         yesButton: "Yes, I'd Be Honored 🤍",
         noButton: "No, With Love & Warm Wishes",
         signOff: "With love and respect,",
@@ -1415,24 +1263,24 @@ export const siteConfig = {
           subheader: "Thank you for saying yes!",
           roleLine: "Our {role}",
           body: [
-            "We are truly happy and honored to have you accept this special role in our wedding. Your support means a lot to us, and we look forward to celebrating this beautiful day with you and creating a memory we can cherish for years to come. Thank you for being part of this special moment.",
+            "I am truly happy and honored that you accepted this special role in my debut. Your support means so much to me, and I look forward to celebrating with you and creating a memory I will cherish for years to come.",
           ],
           signOff: "With love and heartfelt gratitude,",
         },
         no: {
           title: "Thank You",
           script: "for responding",
-          subheader: "We completely understand and respect your decision",
+          subheader: "I completely understand and respect your decision",
           body: [
-            "Thank you for taking the time to read our letter and consider our request. We sincerely appreciate your kindness and the thought you have given to our invitation. There are no hard feelings at all. We are simply grateful to have shared this moment with you and to have you celebrate our happiness in your own way.",
+            "Thank you for taking the time to read my letter and consider my request. There are no hard feelings at all — I am simply grateful to have you in my life and to have you celebrate with me in your own way.",
           ],
         },
         sent: {
           title: "Response Sent",
           script: "successfully",
-          subheader: "Your message has reached us",
+          subheader: "Your message has reached me",
           body: [
-            "We are simply grateful to have shared this moment with you. Your love and warmest wishes mean the world to us.",
+            "Thank you for sharing this moment with me. Your love and warmest wishes mean the world to me.",
           ],
           signOff: "With love,",
         },
@@ -1587,13 +1435,13 @@ export const siteConfig = {
     guests: {
       title: "Guests",
       label: "Guests",
-      description: "Your best look — formal, semi-formal, or smart casual; any color except red.",
+      description: "Your best formal look in burgundy, red, black, or gold.",
       image: "",
       palette: ["#C0C0C6", "#8E8E96", "#3A3A40", "#111013"],
     },
-    paletteNote: `Our theme is ${EVENT.theme}: ${EVENT.colors}. Guests: wear your best in any color except red.`,
-    closing: "Thank you for helping bring this regal night to life. I can't wait to celebrate with you!",
-    note: "Kindly wear any color except red.",
+    paletteNote: `Our theme is ${EVENT.theme}: ${EVENT.colors}. Guests: wear burgundy, red, black, or gold.`,
+    closing: "Thank you for helping make this night so special. I can't wait to celebrate with you!",
+    note: "Kindly wear burgundy, red, black, or gold.",
   },
   narratives: {
     ourStory: "",
@@ -1614,13 +1462,13 @@ export const siteConfig = {
     cardEyebrow: `Theme song · ${EVENT.themeSong.artist}`,
     playlistName: EVENT.themeSong.title,
     cardNote:
-      "Moody, dreamy, and a little mysterious — the song I chose to open my eighteenth. Press play and step into the night with me.",
+      "The song I chose to open my eighteenth. Press play and step into the night with me.",
     buttonText: "Listen on Spotify",
     // Leave any path "" to hide that decoration
     decos: { ...CORNER_DECOS, headerOrnament: DECOR.headerOrnament },
     // ⚠ check — Spotify link for "Goth" by Sidewalks and Skeletons (track, playlist or album links all work)
-    embedUrl: "https://open.spotify.com/embed/playlist/3abV7qIyDiObO2A4b4IRbl?utm_source=generator&si=195afa0b193e4705",
-    spotifyUrl: "https://open.spotify.com/playlist/3abV7qIyDiObO2A4b4IRbl",
+    embedUrl: "https://open.spotify.com/embed/playlist/1YChzOo1Wj6GrTcnz0ap5C?utm_source=generator&si=49d7c00b589b4840",
+    spotifyUrl: "https://open.spotify.com/playlist/1YChzOo1Wj6GrTcnz0ap5C",
   },
   // Closing "See you there!" section (components/sections/see-you-there.tsx).
   //   photos mode (loadingScreen.display "photos") → full-screen celebrant photo
@@ -1629,25 +1477,21 @@ export const siteConfig = {
   seeYouThere: {
     titleLine1: "See you",
     titleLine2: "there!",
+    // Photos mode — lines around the title (like the closing card of the invitation); "" hides one
+    eyebrow: "Until we celebrate",
+    script: "with love, {celebrant}",
+    message: "I can't wait to celebrate my eighteenth with you.",
     // Photos mode — full-screen background that slowly crossfades between the photos.
     // Phones (portrait) use "mobile", tablets / desktops (landscape) use "desktop".
     photos: {
-      mobile: [
-        "/mobile-background/debut (86).webp",
-        "/mobile-background/debut (24).webp",
-        "/mobile-background/debut (2).webp",
-      ],
+      mobile: [PHOTO(3), PHOTO(4), PHOTO(1), PHOTO(2)],
       // Same portraits on wide screens (cropped to fill, framed on her face)
-      desktop: [
-        "/mobile-background/debut (86).webp",
-        "/mobile-background/debut (24).webp",
-        "/mobile-background/debut (2).webp",
-      ],
+      desktop: [PHOTO(3), PHOTO(4), PHOTO(1), PHOTO(2)],
     },
     photoAlt: "{celebrant}",
     // Plain mode
     plain: {
-      eyebrow: "Until the night of October 25",
+      eyebrow: `Until the night of ${EVENT_DATE.replace(/,\s*\d{4}$/, "")}`,
       script: "with love, {celebrant}",
       message: "I can't wait to celebrate my eighteenth with you.",
       decos: { ...CORNER_DECOS, footerVine: DECOR.footerVine },
@@ -1671,7 +1515,7 @@ export const siteConfig = {
     quotes: [
       "She is clothed in strength and dignity, and she laughs without fear of the future. – Proverbs 31:25",
       "Welcome to my debut website! Eighteen years of love, lessons, and grace — and I'm so grateful to share this night with you.",
-      "Thank you for your love, prayers, and support. Dress to impress — I'll see you on the runway!",
+      "Thank you for your love, prayers, and support. I can't wait to celebrate with you!",
     ],
     rsvp: {
       show: true,
@@ -1738,11 +1582,11 @@ export const siteConfig = {
       "Help capture the little moments of {celebrant}'s eighteenth — every smile, dance, and candid laugh. Your photos and clips complete the story of the night.",
     // "Favorite Moments" photo card — always hidden when loadingScreen.display is "plain"
     moments: {
-      show: true,
+      show: false, // hidden — set true to bring back the photo card
       title: "Favorite Moments",
       caption: "Share your snapshots to be featured in the keepsake gallery.",
-      // 3 photos: two portrait photos on top (3:4 frames), one landscape photo below (16:9)
-      images: ["/box/box (1).png", "/box/box (2).jpg", "/desktop-background/debut (4).webp"],
+      // 3 photos: two side by side on top (3:4 frames), one wider frame below (4:3, framed on the face)
+      images: [PHOTO(4), PHOTO(1), PHOTO(2)],
     },
     website: {
       show: true,

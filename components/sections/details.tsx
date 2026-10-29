@@ -8,18 +8,16 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import type { AttireColor } from "@/content/site"
 import Image from "next/image"
 import localFont from "next/font/local"
-import { Cinzel } from "next/font/google"
-import { Shirt, Copy, Check, Navigation, Heart, MapPin, Route, Landmark, Expand } from "lucide-react"
+import { cinzel } from "@/lib/fonts"
+import { Shirt, Copy, Check, Navigation, Heart, MapPin } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { RisingMotes } from "@/components/rising-motes"
+import { GhostMarquee } from "@/components/loader/GhostMarquee"
+import { ghostTextFor } from "@/lib/ghost-text"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -199,71 +197,86 @@ function DressCodePaletteHeader({
   )
 }
 
-function DressCodePaletteSwatches({ palette }: { palette: readonly PaletteColor[] }) {
+// Readable label colour on top of a swatch: dark ink on light colours, white on dark
+function inkOn(hex: string) {
+  const h = hex.replace("#", "")
+  const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h
+  const [r, g, b] = [0, 2, 4].map((k) => parseInt(full.slice(k, k + 2), 16) / 255)
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+  return luminance > 0.55 ? "color-mix(in srgb, var(--color-motif-deep) 85%, black)" : "rgba(255, 255, 255, 0.92)"
+}
+
+// Dress code palette as one framed box of colour columns (each name set vertically).
+// The attire card shows names; the Dress Code reminder uses the same box, shorter
+// and without names.
+function PaletteBox({
+  palette,
+  showNames = true,
+  compact = false,
+}: {
+  palette: readonly PaletteColor[]
+  showNames?: boolean
+  compact?: boolean
+}) {
   const named = palette.filter((c) => c.name)
   return (
     <div
-      className="flex w-full overflow-hidden rounded-xl border-2 shadow-sm"
-      style={{ borderColor: C.light }}
+      className={`mx-auto w-full rounded-2xl p-1.5 sm:p-2 ${compact ? "max-w-[15rem] sm:max-w-xs" : "max-w-md"}`}
+      style={{
+        background: "color-mix(in srgb, white 55%, var(--color-motif-soft))",
+        boxShadow: `inset 0 0 0 1px ${hairline}, 0 10px 22px -14px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)`,
+      }}
       role="img"
-      aria-label={`Dress code color palette: ${(named.length ? named.map((c) => c.name) : palette.map((c) => c.hex)).join(", ")}`}
+      aria-label={`Dress code colors: ${(named.length ? named.map((c) => c.name) : palette.map((c) => c.hex)).join(", ")}`}
     >
-      {palette.map((color, index) => (
-        <div
-          key={`${color.hex}-${index}`}
-          className={`relative flex min-h-[88px] min-w-0 flex-1 items-center justify-center sm:min-h-[108px] md:min-h-[128px] lg:min-h-[148px] ${
-            index === palette.length - 1 ? "" : "border-r border-white/80"
-          }`}
-          style={{ backgroundColor: color.hex }}
-          title={color.name || color.hex}
-        >
-          {color.name ? (
-            <span
-              className="text-[6px] font-semibold uppercase tracking-[0.08em] text-white drop-shadow-sm sm:text-[7px] md:text-[8px] lg:text-[9px]"
-              style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
-            >
-              {color.name}
-            </span>
-          ) : null}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function ColorPalette({ colors }: { colors: readonly string[] }) {
-  const widthClass = colors.length > 4 ? "max-w-md" : "max-w-xs sm:max-w-sm"
-
-  return (
-    <div
-      className={`mx-auto flex h-8 w-full overflow-hidden rounded-full border-2 shadow-sm sm:h-9 ${widthClass}`}
-      style={{ borderColor: C.light }}
-      role="img"
-      aria-label={`Color palette: ${colors.join(", ")}`}
-    >
-      {colors.map((color) => (
-        <div key={color} className="min-w-0 flex-1" style={{ backgroundColor: color }} title={color} />
-      ))}
+      <div className="flex overflow-hidden rounded-xl">
+        {palette.map((color, index) => (
+          <div
+            key={`${color.hex}-${index}`}
+            className={`relative flex min-w-0 flex-1 items-center justify-center ${
+              compact ? "h-12 sm:h-14" : "h-32 sm:h-40"
+            }`}
+            style={{
+              // a soft sheen down each column so the colours read as fabric, not flat fills
+              background: `linear-gradient(180deg, color-mix(in srgb, white 14%, ${color.hex}) 0%, ${color.hex} 45%, color-mix(in srgb, black 12%, ${color.hex}) 100%)`,
+              boxShadow: index > 0 ? "inset 1px 0 0 rgba(255, 255, 255, 0.55)" : undefined,
+            }}
+            title={color.name || color.hex}
+          >
+            {showNames && color.name ? (
+              <span
+                className={`${cinzel.className} text-[0.6rem] font-bold uppercase tracking-[0.22em] sm:text-[0.68rem]`}
+                style={{ writingMode: "vertical-rl", color: inkOn(color.hex) }}
+              >
+                {color.name}
+              </span>
+            ) : null}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
 // Gentle reminders photos as a fanned deck: the top card faces front, the rest peek
-// out behind it alternating left / right. Each step the top card glides to the back
-// of the pile and the next one springs forward.
-// 5 visible: front card in the middle + two on each side (symmetric fan)
+// out behind it in pairs (left / right). With an even count the last card has no
+// partner, so it sits straight behind the front card and peeks out over its top —
+// four photos read as a balanced fan instead of two on one side and one on the other.
+// Each step the top card glides to the back of the pile and the next one springs forward.
 const DECK_VISIBLE = 5
 
-function deckPose(depth: number) {
+function deckPose(depth: number, count: number) {
   if (depth === 0) return { x: 0, y: 0, rotate: 0, scale: 1 }
+  const pairs = Math.floor((Math.min(count, DECK_VISIBLE) - 1) / 2)
+  if (depth > pairs * 2) return { x: 0, y: -16, rotate: 0, scale: 0.86 }
   const side = depth % 2 === 1 ? -1 : 1
   const step = Math.ceil(depth / 2)
-  // Wide fan: each pair steps ~half a card out to the side, so every photo shows
+  // Each pair steps a good part of a card out to the side, so every photo shows
   return {
-    x: side * step * 50,
-    y: step * 5,
-    rotate: side * (4 + step * 3),
-    scale: 1 - step * 0.07,
+    x: side * step * 58,
+    y: step * 8,
+    rotate: side * (5 + step * 3),
+    scale: 1 - step * 0.08,
   }
 }
 
@@ -278,19 +291,21 @@ function PhotoDeck({
 }) {
   const count = images.length
   return (
-    <div className="relative mx-auto mb-6 h-[8rem] w-full max-w-[18rem] sm:mb-7 sm:h-[9.5rem] sm:max-w-[22rem]" aria-hidden>
+    <div className="relative mx-auto mb-6 mt-3 h-[11.5rem] w-full max-w-[19rem] sm:mb-7 sm:h-[14rem] sm:max-w-[23rem]" aria-hidden>
       {images.map((image, index) => {
         // 0 = top of the deck, 1… = further back
         const depth = (index - currentIndex + count) % count
-        const pose = deckPose(depth)
+        const pose = deckPose(depth, count)
         return (
           <motion.div
             key={image}
-            className="absolute inset-x-0 top-0 mx-auto aspect-[4/5] w-[5.6rem] overflow-hidden rounded-md sm:w-[6.8rem]"
+            className="absolute inset-x-0 top-0 mx-auto aspect-[9/16] w-[5.6rem] overflow-hidden rounded-md sm:w-[6.8rem]"
             style={{
               zIndex: count - depth,
               padding: 3,
               background: "var(--color-motif-soft)",
+              outline: "1px solid color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)",
+              outlineOffset: -1,
               boxShadow:
                 depth === 0
                   ? "0 14px 26px -10px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)"
@@ -308,7 +323,7 @@ function PhotoDeck({
             }
           >
             <div className="relative h-full w-full overflow-hidden rounded-[0.3rem]">
-              <Image src={image} alt="" fill className="object-cover" sizes="104px" />
+              <Image src={image} alt="" fill className="object-cover object-top" sizes="(min-width: 640px) 120px, 100px" />
               {depth > 0 && (
                 <div
                   className="absolute inset-0"
@@ -709,6 +724,8 @@ function EventVenueCard({
                   <SpecialCharFont text={venueAddress} />
                 </p>
               </div>
+              {/* No map link yet (venue to follow) → no QR */}
+              {mapsLink ? (
               <div className="flex flex-col items-center gap-1.5 sm:gap-2 flex-shrink-0">
                 <div className="p-1.5 sm:p-2 md:p-2.5 rounded-lg shadow-sm" style={{ backgroundColor: qrBg }}>
                   <QRCodeSVG value={mapsLink} size={80} level="M" includeMargin={false} fgColor={qrFg} bgColor={qrBg} />
@@ -717,9 +734,12 @@ function EventVenueCard({
                   {labels.scanForDirections}
                 </p>
               </div>
+              ) : null}
             </div>
           </div>
 
+          {/* Directions + copy buttons only once there's a map link */}
+          {mapsLink ? (
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4">
             <button
               type="button"
@@ -755,214 +775,8 @@ function EventVenueCard({
               <span>{copied ? labels.copied : labels.copyAddress}</span>
             </button>
           </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-type DirectionsImage = { src: string; alt: string; caption: string }
-
-type Directions = {
-  title: string
-  subtitle: string
-  steps: readonly string[]
-  landmarksLabel: string
-  landmarks: readonly string[]
-  address: string
-  mapImage?: DirectionsImage
-  streetImage?: DirectionsImage
-  enlargeHint?: string
-}
-
-// Framed photo that opens full size in a new tab (pinch-zoom on phones)
-function DirectionsFigure({
-  image,
-  width,
-  height,
-  sizes,
-  hint,
-  priority = false,
-}: {
-  image: DirectionsImage
-  width: number
-  height: number
-  sizes: string
-  hint?: string
-  priority?: boolean
-}) {
-  return (
-    <figure className="group/fig">
-      <a
-        href={image.src}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="relative block overflow-hidden rounded-xl sm:rounded-2xl"
-        style={{
-          padding: 4,
-          background: C.light,
-          boxShadow: `inset 0 0 0 1px ${hairline}, 0 16px 30px -18px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent)`,
-        }}
-        aria-label={`${image.caption} — open full size`}
-      >
-        <div className="relative overflow-hidden rounded-[0.6rem] sm:rounded-xl">
-          <Image
-            src={image.src}
-            alt={image.alt}
-            width={width}
-            height={height}
-            sizes={sizes}
-            priority={priority}
-            className="h-auto w-full transition-transform duration-700 group-hover/fig:scale-[1.02]"
-          />
-          {hint ? (
-            <span
-              className={`${cinzel.className} absolute bottom-2 right-2 flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.12em] backdrop-blur-sm sm:text-[0.65rem]`}
-              style={{
-                color: "#fff",
-                background: "color-mix(in srgb, var(--color-motif-deep) 72%, transparent)",
-                boxShadow: "inset 0 0 0 1px color-mix(in srgb, var(--color-welcome-gold) 55%, transparent)",
-              }}
-            >
-              <Expand className="h-3 w-3" aria-hidden />
-              {hint}
-            </span>
           ) : null}
         </div>
-      </a>
-      <figcaption
-        className={`${cinzel.className} ${ct.labelSm} mt-2.5 text-center font-semibold uppercase tracking-[0.18em]`}
-        style={{ color: C.label }}
-      >
-        {image.caption}
-      </figcaption>
-    </figure>
-  )
-}
-
-function DirectionsCard({ directions }: { directions: Directions }) {
-  const { mapImage, streetImage, enlargeHint } = directions
-  return (
-    <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]" style={cardStyle}>
-      <div className="p-5 sm:p-7 md:p-9">
-        <div className="text-center">
-          <span
-            className="mx-auto flex h-10 w-10 items-center justify-center rounded-full"
-            style={{ background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)" }}
-            aria-hidden
-          >
-            <Route className="h-4.5 w-4.5" style={{ color: "var(--color-welcome-gold)" }} />
-          </span>
-          <h3
-            className={`${theSeasons.className} ${ct.sectionTitle} mt-3 font-semibold uppercase tracking-[0.16em]`}
-            style={{ color: C.heading }}
-          >
-            {directions.title}
-          </h3>
-          <p className={`font-goudy-italic ${ct.body} mt-1`} style={{ color: C.soft }}>
-            {directions.subtitle}
-          </p>
-          <FadeRule className="mt-4" />
-        </div>
-
-        {/* Illustrated route map — the whole way from the rotonda to the venue */}
-        {mapImage ? (
-          <div className="mx-auto mt-5 max-w-3xl sm:mt-6">
-            <DirectionsFigure
-              image={mapImage}
-              width={1408}
-              height={768}
-              sizes="(max-width: 768px) 92vw, 768px"
-              hint={enlargeHint}
-            />
-          </div>
-        ) : null}
-
-        {/* Steps beside the street-level photo (stacked on phones) */}
-        <div
-          className={`mx-auto mt-6 grid max-w-3xl items-center gap-6 sm:mt-8 ${
-            streetImage ? "md:grid-cols-[1fr_minmax(0,17rem)] md:gap-8" : ""
-          }`}
-        >
-          <ol className="relative">
-            {directions.steps.map((step, i) => {
-              const isLast = i === directions.steps.length - 1
-              return (
-                <li key={i} className="relative flex items-start gap-3 pb-5 last:pb-0 sm:gap-4">
-                  {/* Dotted gold line linking each step to the next */}
-                  {!isLast && (
-                    <span
-                      className="absolute left-[0.875rem] top-8 bottom-1 w-px sm:left-4 sm:top-9"
-                      style={{
-                        backgroundImage: "linear-gradient(to bottom, var(--color-welcome-gold) 50%, transparent 50%)",
-                        backgroundSize: "1px 6px",
-                      }}
-                      aria-hidden
-                    />
-                  )}
-                  <span
-                    className={`${cinzel.className} relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold sm:h-8 sm:w-8 sm:text-sm`}
-                    style={
-                      isLast
-                        ? {
-                            background: "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)",
-                            color: "#fff",
-                            boxShadow: `inset 0 0 0 1px ${hairline}`,
-                          }
-                        : { background: C.light, color: C.accent, boxShadow: `inset 0 0 0 1px ${hairline}` }
-                    }
-                  >
-                    {isLast ? <MapPin className="h-3.5 w-3.5" aria-hidden /> : i + 1}
-                  </span>
-                  <p className={`font-goudy-italic ${ct.body} pt-0.5 leading-relaxed`} style={{ color: C.body }}>
-                    {step}
-                  </p>
-                </li>
-              )
-            })}
-          </ol>
-
-          {streetImage ? (
-            <div className="mx-auto w-full max-w-[17rem] sm:max-w-xs md:max-w-none">
-              <DirectionsFigure
-                image={streetImage}
-                width={992}
-                height={1081}
-                sizes="(max-width: 768px) 80vw, 272px"
-                hint={enlargeHint}
-              />
-            </div>
-          ) : null}
-        </div>
-
-        {directions.landmarks?.length > 0 && (
-          <div className="mx-auto mt-6 max-w-3xl rounded-2xl border p-4 sm:mt-8 sm:p-5" style={softPanelStyle}>
-            <p
-              className={`${cinzel.className} ${ct.label} flex items-center gap-1.5 font-semibold uppercase tracking-[0.18em]`}
-              style={{ color: C.label }}
-            >
-              <Landmark className="h-3.5 w-3.5" aria-hidden />
-              {directions.landmarksLabel}
-            </p>
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              {directions.landmarks.map((place) => (
-                <span
-                  key={place}
-                  className={`${cinzel.className} rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.06em] sm:text-xs`}
-                  style={{ background: C.light, color: C.heading, boxShadow: `inset 0 0 0 1px ${hairline}` }}
-                >
-                  {place}
-                </span>
-              ))}
-            </div>
-            <p className={`${theSeasons.className} ${ct.body} mt-3 flex items-start gap-1.5 tracking-[0.04em]`} style={{ color: C.body }}>
-              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: C.accent }} aria-hidden />
-              <span className="min-w-0">
-                <SpecialCharFont text={directions.address} />
-              </span>
-            </p>
-          </div>
-        )}
       </div>
     </div>
   )
@@ -971,7 +785,7 @@ function DirectionsCard({ directions }: { directions: Directions }) {
 export function Details() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.eventDetails
-  const { venues, labels, attire, reminders, directions } = content
+  const { venues, labels, attire, reminders } = content
   const { ceremony, reception } = siteConfig
 
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set())
@@ -986,8 +800,10 @@ export function Details() {
   const receptionImages = isCombined ? [] : reception.image
   // "plain" display mode (loadingScreen.display) shows no photos above the reminders
   const isPlain = siteConfig.loadingScreen?.display === "plain"
+  // Same edge lettering as the loading screen, envelope and hero
+  const ghostText = ghostTextFor(siteConfig)
   const reminderImages = isPlain ? [] : reminders.images
-  const paletteHexes = toPaletteColors(attire.palette).map((c) => c.hex)
+  const reminderPalette = toPaletteColors(attire.palette)
   // Guard against null entries (e.g. a stray comma in ATTIRE.show)
   const attireGroups = attire.groups.filter(Boolean)
 
@@ -1040,7 +856,7 @@ export function Details() {
 
   const ceremonyVenue = `${ceremony.location}, ${ceremony.venue}`
   const receptionVenue = `${reception.location}, ${reception.venue}`
-  const receptionMapsLink = reception.map || `https://maps.google.com/?q=${encodeURIComponent(receptionVenue)}`
+  const receptionMapsLink = reception.map
 
   return (
     <div
@@ -1050,6 +866,15 @@ export function Details() {
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
       <RisingMotes count={40} />
+      {/* Ghost lettering down the left edge and up the right — this section is tall,
+          so each column carries more copies of the line */}
+      <GhostMarquee
+        text={ghostText}
+        className="section-ghost"
+        fontClassName={theSeasons.className}
+        still={!!reduceMotion}
+        repeat={8}
+      />
       <Section
         id="details"
         className="relative z-10 pt-14 pb-12 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 overflow-hidden"
@@ -1156,10 +981,6 @@ export function Details() {
               labels={labels}
             />
           )}
-          {/* How to get there — route map, numbered steps, street photo and landmarks */}
-          {directions?.steps?.length ? (
-            <DirectionsCard directions={directions} />
-          ) : null}
         </div>
 
         {/* Attire Guidelines */}
@@ -1205,14 +1026,14 @@ export function Details() {
                     {halves.map((half, i) => (
                       <Fragment key={half.label}>
                         {/* Palette sits between the two halves (or after the only one) */}
-                        {hasPalette && i === 1 ? <DressCodePaletteSwatches palette={palette} /> : null}
+                        {hasPalette && i === 1 ? <PaletteBox palette={palette} /> : null}
                         <AttirePaletteGroup
                           label={half.label}
                           description={highlightPhrase(half.details, half.highlight)}
                         />
                       </Fragment>
                     ))}
-                    {hasPalette && halves.length < 2 ? <DressCodePaletteSwatches palette={palette} /> : null}
+                    {hasPalette && halves.length < 2 ? <PaletteBox palette={palette} /> : null}
                   </div>
                 </AttireCard>
               )
@@ -1274,7 +1095,11 @@ export function Details() {
                           {item.paragraphs.map((text, i) => (
                             <div key={i} className="space-y-2.5">
                               <p>{fillTimes(text)}</p>
-                              {item.showPalette && i === 0 ? <ColorPalette colors={paletteHexes} /> : null}
+                              {item.showPalette && i === 0 && reminderPalette.length > 0 ? (
+                                <div className="pt-1">
+                                  <PaletteBox palette={reminderPalette} showNames={false} compact />
+                                </div>
+                              ) : null}
                             </div>
                           ))}
                         </div>

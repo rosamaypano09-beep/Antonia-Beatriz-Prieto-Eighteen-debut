@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Loading screen — "Fashion Gala" poster
+   Loading screen — debut poster
    Blurred photo marquee under a red-velvet tint, gold Didone titles, cut-out
    portrait in the center, details row + dress-code pill at the bottom.
    Velvet curtains part on load; everything else enters on CSS delays
@@ -139,6 +139,17 @@
     radial-gradient(ellipse at center, transparent 55%, rgba(10, 0, 2, 0.6) 100%);
 }
 
+/* ---------- Ghost lettering ----------
+   Shared marquee (GhostMarquee + ghost-marquee.css) placed behind the poster;
+   it fades in as the curtains clear. */
+
+.gala-ghost {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  animation: gala-fade-to 2.4s ease 2.6s forwards;
+}
+
 /* ---------- Gold dust ---------- */
 
 .gala-motes {
@@ -174,7 +185,7 @@
   overflow: hidden;
   pointer-events: none;
   contain: strict;
-  animation: gala-hide 0s linear 4.3s forwards;
+  animation: gala-hide 0s linear 3.45s forwards;
 }
 .gala-curtain {
   position: absolute;
@@ -184,7 +195,7 @@
   display: flex;
   will-change: transform, opacity;
   backface-visibility: hidden;
-  animation: gala-curtain-exit-left 0.95s cubic-bezier(0.55, 0, 0.7, 0.2) 3.3s forwards;
+  animation: gala-curtain-exit-left 0.85s cubic-bezier(0.55, 0, 0.7, 0.2) 2.55s forwards;
 }
 .gala-curtain--left {
   left: 0;
@@ -218,7 +229,7 @@
   transform-origin: 0 0;
   will-change: transform;
   backface-visibility: hidden;
-  animation: gala-fold 2.7s cubic-bezier(0.6, 0, 0.22, 1) calc(550ms + var(--inner) * 55ms) forwards;
+  animation: gala-fold 2.2s cubic-bezier(0.6, 0, 0.22, 1) calc(380ms + var(--inner) * 45ms) forwards;
 }
 .gala-curtain--right .gala-curtain__fold {
   --tx: calc(var(--i) * 88%);
@@ -305,17 +316,21 @@
 .gala__eyebrow,
 .gala__kicker,
 .gala__tagline p {
-  font-family: var(--gala-font-caps), serif;
+  font-family: var(--font-cinzel), serif;
   text-transform: uppercase;
   color: var(--gala-ink);
 }
 
+/* Two balanced lines on phones ("You are cordially invited / to the debut of") */
 .gala__eyebrow {
+  max-width: 21em;
   margin: clamp(0.35rem, 1.2dvh, 0.9rem) 0 clamp(0.1rem, 0.4dvh, 0.3rem);
-  font-size: clamp(0.56rem, min(2.3vw, 1.5dvh), 0.9rem);
+  margin-right: -0.28em; /* optically re-center tracked text */
+  font-size: clamp(0.62rem, min(2.75vw, 1.7dvh), 0.9rem);
   font-weight: 500;
-  letter-spacing: 0.3em;
-  margin-right: -0.3em; /* optically re-center tracked text */
+  letter-spacing: 0.28em;
+  line-height: 1.75;
+  text-wrap: balance;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
 
@@ -364,24 +379,52 @@
 }
 
 /* Shadows sit on the wrappers so the gold pieces stay free to animate their own filter */
-.gala__name,
+.gala__name-wrap,
+.gala__fullname,
 .gala__occasion {
   filter: var(--gala-shadow);
 }
 
-.gala__name {
+/* Nickname: big gold script, written on left → right. The padding clears the tall
+   "B" swash above and the loops below so neither touches the lines around it. */
+.gala__name-wrap {
+  position: relative;
+  z-index: 1;
   display: block;
-  font-family: var(--gala-font-seasons), var(--gala-font-display), serif;
-  font-weight: 400;
-  text-transform: uppercase;
-  font-size: clamp(2.6rem, min(16vw, 11dvh), 8rem);
-  letter-spacing: 0.04em;
-  line-height: 0.95;
+  padding: 0.24em 0 0.04em;
+  font-size: clamp(3.6rem, min(22vw, 12.5dvh), 8.5rem);
+  line-height: 0.9;
   white-space: nowrap;
-  perspective: 600px;
 }
-.gala__name-letter {
-  display: inline-block;
+
+/* Full name: engraved caps between two short gold hairlines */
+.gala__fullname {
+  --gala-track: 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  /* Sits under "18th Birthday" — clear of the script's loops */
+  margin: clamp(0.35rem, 1.1dvh, 0.7rem) 0 0;
+  font-family: var(--font-cinzel), serif;
+  font-size: clamp(0.7rem, min(3.4vw, 2dvh), 1.2rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--gala-track);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.gala__fullname::before,
+.gala__fullname::after {
+  content: '';
+  flex: none;
+  width: clamp(0.9rem, 4vw, 2.2rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gala-gold));
+}
+.gala__fullname::after {
+  margin-left: calc(var(--gala-track) * -1); /* cancel the trailing letter-spacing */
+  background: linear-gradient(270deg, transparent, var(--gala-gold));
 }
 
 /* Script lines (Above the Beyond). Generous padding + negative margin keep the
@@ -395,15 +438,6 @@
   line-height: 1.1;
   padding: 0.6em 0.8em 0.65em;
   margin: -0.6em -0.8em -0.65em;
-}
-/* "Fashion Gala" overlaps the bottom of the name, like the hero title */
-.gala__subtitle-wrap {
-  position: relative;
-  z-index: 1;
-  display: block;
-  margin-top: -0.3em;
-  font-size: clamp(1.45rem, min(8.4vw, 5.6dvh), 3.9rem);
-  filter: var(--gala-shadow);
 }
 
 /* ---------- Portrait stage ---------- */
@@ -425,6 +459,20 @@
   object-fit: contain;
   object-position: 50% 100%;
   filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 40px rgba(255, 140, 120, 0.14));
+}
+
+/* Phones: a bigger portrait set higher — it fills the stage width, anchored at her head,
+   and the lower skirt fades into the velvet behind "18th Birthday" */
+@media (max-width: 559px) {
+  .gala__photo {
+    inset: clamp(-1.6rem, -2.6dvh, -0.6rem) -16% clamp(-6.5rem, -10dvh, -3rem);
+    -webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 96%);
+    mask-image: linear-gradient(to bottom, #000 64%, transparent 96%);
+  }
+  .gala__photo-img {
+    object-fit: cover;
+    object-position: 50% 0%;
+  }
 }
 
 .gala__tagline {
@@ -472,7 +520,7 @@
 .gala__kicker {
   --gala-track: 0.34em;
   margin: 0;
-  font-size: clamp(0.72rem, min(3.6vw, 2.2dvh), 1.4rem);
+  font-size: clamp(0.7rem, min(3.3vw, 2.1dvh), 1.25rem);
   font-weight: 500;
   letter-spacing: var(--gala-track);
   margin-right: calc(var(--gala-track) * -1);
@@ -500,21 +548,6 @@
   letter-spacing: 0.04em;
   line-height: 0.9;
 }
-/* Light burst behind the number as it lands */
-.gala__age::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 2.2em;
-  height: 2.2em;
-  transform: translate(-50%, -50%) scale(0.2);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 230, 170, 0.55) 0%, rgba(217, 181, 106, 0.18) 40%, transparent 70%);
-  opacity: 0;
-  z-index: -1;
-  animation: gala-burst 1.6s ease-out calc(var(--gala-delay, 0ms) + 250ms) forwards;
-}
 .gala__age-num {
   padding: 0 0.02em;
 }
@@ -538,119 +571,67 @@
   display: block;
 }
 
-/* Details: Date · Time · Venue set like an engraved invitation —
-   no box, small gold caps, serif value, italic note, hairline gold dividers */
-.gala__details {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr) minmax(0, 1.35fr);
-  align-items: start;
-  width: min(100%, 600px);
-  margin: clamp(0.45rem, 1.3dvh, 0.85rem) 0 0;
-  text-align: center;
-}
-.gala__detail {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 0;
-  padding: 0.1rem clamp(0.35rem, 2vw, 1rem);
-  font-family: var(--gala-font-body), serif;
-  font-variant-numeric: lining-nums;
-  line-height: 1.2;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
-}
-.gala__detail + .gala__detail {
-  border-left: 1px solid;
-  border-image: linear-gradient(180deg, transparent, color-mix(in srgb, var(--gala-gold) 75%, transparent) 20%, color-mix(in srgb, var(--gala-gold) 75%, transparent) 80%, transparent) 1;
-}
-/* Label flanked by short gold rules: — DATE — */
-.gala__detail dt {
-  display: flex;
-  align-items: center;
-  gap: 0.45em;
-  font-family: var(--gala-font-caps), serif;
-  font-size: clamp(0.54rem, min(2.4vw, 1.4dvh), 0.78rem);
-  font-weight: 600;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--gala-gold);
-}
-.gala__detail dt::before,
-.gala__detail dt::after {
-  content: '';
-  width: 0.9em;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.7;
-}
-.gala__detail dt::after {
-  margin-left: -0.24em; /* cancel the trailing letter-spacing */
-}
-.gala__detail dd {
-  margin: 0;
-}
-.gala__detail-value {
-  margin-top: clamp(0.2rem, 0.6dvh, 0.35rem) !important;
-  font-size: clamp(0.88rem, min(3.8vw, 2.2dvh), 1.2rem);
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  color: var(--gala-ink);
-  text-wrap: balance;
-}
-.gala__detail-sub {
-  margin-top: 0.12rem !important;
-  font-size: clamp(0.68rem, min(2.9vw, 1.7dvh), 0.9rem);
-  font-weight: 500;
-  font-style: italic;
-  color: var(--gala-ink-soft);
-  text-wrap: balance;
-}
-/* Long addresses stay to three lines */
-.gala__detail--venue .gala__detail-sub {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-}
-
-/* Gold progress bar with a moving glint, and the rotating loading line */
+/* Progress: a gold bar. The fill width comes from LoadingScreen's progress
+   loop; the stripes, glint and spark move on their own so it always looks alive. */
 .gala__progress {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(72%, 300px);
-  margin-top: clamp(0.6rem, 1.6dvh, 1rem);
+  width: min(78%, 340px);
+  margin-top: clamp(0.7rem, 1.8dvh, 1.1rem);
+}
+.gala__progress-frame {
+  width: 100%;
 }
 .gala__progress-track {
   position: relative;
   width: 100%;
-  height: 3px;
+  height: 6px;
+  padding: 1px;
   border-radius: 999px;
-  background: rgba(217, 181, 106, 0.2);
-  box-shadow: inset 0 0 0 0.5px rgba(243, 220, 159, 0.25);
+  background: linear-gradient(180deg, rgba(20, 0, 4, 0.75), rgba(60, 6, 14, 0.55));
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(217, 181, 106, 0.45),
+    0 0 12px rgba(217, 181, 106, 0.18);
 }
 .gala__progress-bar {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
+  position: relative;
+  width: 0;
+  height: 100%;
   border-radius: inherit;
-  transform-origin: left center;
-  transform: scaleX(0);
-  background: linear-gradient(90deg, #a87724, #e2bd6b 45%, #fff1c4 80%, #e2bd6b);
-  box-shadow: 0 0 10px rgba(243, 220, 159, 0.75), 0 0 2px rgba(255, 241, 196, 0.9);
-  animation-name: gala-progress;
-  animation-timing-function: cubic-bezier(0.4, 0.1, 0.4, 1);
-  animation-fill-mode: forwards;
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.22) 0 4px, transparent 4px 9px),
+    linear-gradient(180deg, #fff1c4 0%, #e2bd6b 45%, #a87724 100%);
+  background-size: 18px 100%, 100% 100%;
+  box-shadow: 0 0 10px rgba(243, 220, 159, 0.7), 0 0 2px rgba(255, 241, 196, 0.9);
+  animation: gala-stripes 0.9s linear infinite;
 }
+/* Glint sweeping along the filled part */
 .gala__progress-bar::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent) -40% 0 / 40% 100% no-repeat;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent) -40% 0 / 40% 100% no-repeat;
   animation: gala-glint 1.8s ease-in-out infinite;
 }
+/* Pulsing spark on the leading edge */
+.gala__progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffaf0 0%, #fff1c4 40%, rgba(243, 220, 159, 0) 72%);
+  box-shadow: 0 0 10px 3px rgba(255, 228, 160, 0.75);
+  animation: gala-spark 1.1s ease-in-out infinite alternate;
+}
 .gala__status {
-  margin: clamp(0.35rem, 0.9dvh, 0.55rem) 0 0;
+  margin: clamp(0.45rem, 1.1dvh, 0.65rem) 0 0;
   font-family: var(--gala-font-body), serif;
   font-style: italic;
   font-weight: 500;
@@ -659,7 +640,7 @@
   font-variant-numeric: lining-nums;
   color: var(--gala-gold-soft);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
-  animation: gala-status-in 0.7s var(--gala-ease) both;
+  animation: gala-fade-in 0.6s ease both;
 }
 
 @media (min-width: 560px) {
@@ -668,85 +649,27 @@
   }
 }
 
-/* Short screens: tighten the address so the portrait keeps its room */
-@media (max-height: 700px) {
-  .gala__detail--venue .gala__detail-sub {
-    -webkit-line-clamp: 2;
-  }
-}
 @media (max-height: 580px) {
   .gala__tagline {
     display: none;
   }
 }
 
-/* ---------- Entrance ---------- */
-
-.gala-reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  filter: blur(6px);
-  animation: gala-reveal 1.1s var(--gala-ease) var(--gala-delay, 0ms) forwards;
-}
-.gala-reveal--left {
-  transform: translateX(-22px);
-}
-.gala-reveal--right {
-  transform: translateX(22px);
-}
-/* Tracked caps settle from wide spacing */
-.gala-reveal--track {
-  transform: none;
-  letter-spacing: calc(var(--gala-track) + 0.5em);
-  animation-name: gala-reveal-track;
-  animation-duration: 1.5s;
-}
-.gala-reveal--title {
-  transform: translateY(20px) scale(0.92);
-  filter: blur(8px);
-  animation-duration: 1.4s;
-}
-.gala-reveal--wide {
-  transform: scaleX(0);
-  filter: none;
-}
-.gala-reveal--photo {
-  transform: translateY(40px) scale(1.08);
-  filter: blur(12px) brightness(0.4);
-  animation-duration: 2.2s;
-}
-
-/* Name letters flip up into place one by one, then the sheen ripples across them */
-.gala-letter {
-  opacity: 0;
-  transform: translateY(0.4em) rotateX(75deg);
-  filter: blur(8px);
-  --gala-sheen-delay: calc(var(--gala-delay, 0ms) + 3s);
-  animation:
-    gala-letter 1.1s var(--gala-ease) var(--gala-delay, 0ms) forwards,
-    gala-sheen 6s ease-in-out var(--gala-sheen-delay) infinite;
-}
-
-/* The age drops in big and settles with a slight bounce */
-.gala-pop {
-  opacity: 0;
-  transform: scale(1.7);
-  filter: blur(10px);
-  animation: gala-pop 1.2s cubic-bezier(0.34, 1.4, 0.5, 1) var(--gala-delay, 0ms) forwards;
-}
-
-/* Script is "written" left → right, then joins the sheen */
-.gala-write {
-  clip-path: inset(-20% 100% -20% -20%);
-  animation:
-    gala-write 1.8s cubic-bezier(0.55, 0.1, 0.35, 1) var(--gala-delay, 0ms) forwards,
-    gala-sheen 6s ease-in-out calc(var(--gala-delay, 0ms) + 2.2s) infinite;
-}
-
-.gala-gold.gala-reveal--title {
-  animation:
-    gala-reveal 1.4s var(--gala-ease) var(--gala-delay, 0ms) forwards,
-    gala-sheen 6s ease-in-out calc(var(--gala-delay, 0ms) + 1.6s) infinite;
+/* ---------- Name glow ----------
+   No entrance animations: the poster is fully set behind the curtains, so every
+   word and the portrait are already in place the moment the curtains part. */
+.gala__name-wrap::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 58%;
+  width: 3.2em;
+  height: 1.6em;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 214, 150, 0.32) 0%, rgba(217, 181, 106, 0.12) 45%, transparent 70%);
+  opacity: 0.6;
 }
 
 /* ---------- Exit ---------- */
@@ -761,92 +684,39 @@
 
 /* ---------- Reduced motion ---------- */
 
-.gala-loader.is-reduced-motion .gala-reveal,
-.gala-loader.is-reduced-motion .gala-letter,
-.gala-loader.is-reduced-motion .gala-pop,
-.gala-loader.is-reduced-motion .gala-write,
 .gala-loader.is-reduced-motion .gala-gold,
 .gala-loader.is-reduced-motion .gala-bg__folds,
 .gala-loader.is-reduced-motion .gala-bg__bloom,
-.gala-loader.is-reduced-motion .gala-bg__spot {
+.gala-loader.is-reduced-motion .gala-bg__spot,
+.gala-loader.is-reduced-motion .gala__progress-bar,
+.gala-loader.is-reduced-motion .gala__progress-bar::before,
+.gala-loader.is-reduced-motion .gala__progress-bar::after {
   animation: none;
   opacity: 1;
-  transform: none;
-  filter: none;
-  clip-path: none;
-}
-.gala-loader.is-reduced-motion .gala__age::before {
-  display: none;
 }
 .gala-loader.is-reduced-motion,
 .gala-loader.is-reduced-motion .gala {
   transition-duration: 0.2s;
 }
 @media (prefers-reduced-motion: reduce) {
-  .gala-reveal,
-  .gala-letter,
-  .gala-pop,
-  .gala-write,
   .gala-gold,
   .gala-bg__folds,
   .gala-bg__bloom,
-  .gala-bg__spot {
+  .gala-bg__spot,
+  .gala__progress-bar,
+  .gala__progress-bar::before,
+  .gala__progress-bar::after {
     animation: none !important;
     opacity: 1;
-    transform: none;
-    filter: none;
-    clip-path: none;
   }
   .gala-mote,
-  .gala-curtains,
-  .gala__age::before {
+  .gala-curtains {
     display: none;
   }
 }
 
 /* ---------- Keyframes ---------- */
 
-@keyframes gala-reveal {
-  to {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-@keyframes gala-reveal-track {
-  to {
-    opacity: 1;
-    filter: none;
-    letter-spacing: var(--gala-track);
-  }
-}
-@keyframes gala-letter {
-  to {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
-  }
-}
-@keyframes gala-pop {
-  to {
-    opacity: 1;
-    transform: none;
-    filter: blur(0);
-  }
-}
-@keyframes gala-burst {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.2);
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.6);
-  }
-}
 @keyframes gala-sheen {
   0%,
   100% {
@@ -899,11 +769,6 @@
     transform: scaleX(40);
   }
 }
-@keyframes gala-write {
-  to {
-    clip-path: inset(-20% -20% -20% -20%);
-  }
-}
 @keyframes gala-hide {
   to {
     visibility: hidden;
@@ -914,21 +779,24 @@
     opacity: 1;
   }
 }
-@keyframes gala-progress {
-  to {
-    transform: scaleX(1);
-  }
-}
 @keyframes gala-fade-in {
   from {
     opacity: 0;
   }
 }
-@keyframes gala-status-in {
+@keyframes gala-stripes {
+  to {
+    background-position: 18px 0, 0 0;
+  }
+}
+@keyframes gala-spark {
   from {
-    opacity: 0;
-    transform: translateY(6px);
-    filter: blur(3px);
+    opacity: 0.75;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.15);
   }
 }
 @keyframes gala-glint {

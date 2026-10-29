@@ -7,16 +7,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import MessageWallDisplay from "./message-wall-display"
-import { Cinzel, Lora } from "next/font/google"
+import { Lora } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { fillCelebrant } from "@/lib/celebrant"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 // Upright, screen-friendly serif for body copy and inputs (same as the My Story paragraphs)
 const lora = Lora({

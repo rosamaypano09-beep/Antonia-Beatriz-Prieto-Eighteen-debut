@@ -16,7 +16,8 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "motion/react"
 import { Heart, Check, X, Sparkles } from "lucide-react"
 import localFont from "next/font/local"
-import { Cinzel, Playfair_Display } from "next/font/google"
+import { Playfair_Display } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import { ProposalMixedText, proposalMixedTextInter } from "@/lib/proposal-mixed-text"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { Hero as InvitationHero } from "@/components/loader/Hero"
@@ -34,10 +35,6 @@ const Silk = dynamic(() => import("@/components/silk"), { ssr: false })
 const proposalEntryEase = [0.22, 1, 0.36, 1] as const
 const CINEMATIC_ENTRY_MS = 3000
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-})
 
 const playfair = Playfair_Display({
   subsets: ["latin"],

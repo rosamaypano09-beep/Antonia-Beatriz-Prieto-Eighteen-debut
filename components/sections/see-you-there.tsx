@@ -1,7 +1,7 @@
 "use client"
 
 import { fillCelebrant } from "@/lib/celebrant"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import localFont from "next/font/local"
 import Image from "next/image"
 import { useEffect, useState } from "react"
@@ -9,10 +9,6 @@ import { motion, useReducedMotion, type Variants } from "motion/react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -33,7 +29,10 @@ const PHOTO_HOLD_MS = 6000
 
 const titleSize = "clamp(2.85rem, 13.5vw, 6.75rem)"
 const photoTitleShadow =
-  "0 1px 0 rgb(255 250 244 / 28%), 0 2px 18px rgb(42 34 28 / 55%), 0 12px 36px rgb(42 34 28 / 40%)"
+  "0 1px 0 rgb(255 250 244 / 28%), 0 2px 18px rgb(30 4 10 / 60%), 0 12px 36px rgb(30 4 10 / 45%)"
+// Small lines over the photo: a tight, deep shadow so they read on any part of the image
+const softShadow = "0 1px 2px rgb(20 2 6 / 85%), 0 2px 8px rgb(20 2 6 / 70%), 0 6px 24px rgb(20 2 6 / 55%)"
+const SCRIPT_GOLD = "var(--color-welcome-gold)"
 
 const CORNER_DECO_CLASS =
   "block h-auto w-auto max-w-[150px] sm:max-w-[230px] md:max-w-[300px] lg:max-w-[360px] select-none opacity-90"
@@ -225,7 +224,8 @@ function PhotoStack({
 function PhotoSeeYouThere() {
   const siteConfig = useSiteConfig()
   const content = siteConfig.seeYouThere
-  const alt = fillCelebrant(content.photoAlt, siteConfig)
+  const fill = (text: string) => fillCelebrant(text, siteConfig)
+  const alt = fill(content.photoAlt)
   const { mobile, desktop } = content.photos
   const reduceMotion = useReducedMotion()
   const [activeIndex, setActiveIndex] = useState(0)
@@ -238,16 +238,20 @@ function PhotoSeeYouThere() {
   }, [reduceMotion, slideCount])
 
   return (
-    <section id="see-you-there" className={`${theSeasons.variable} relative isolate w-full overflow-hidden`}>
+    <section
+      id="see-you-there"
+      className={`${theSeasons.variable} ${aboveTheBeyond.variable} relative isolate w-full overflow-hidden`}
+      style={{ background: "var(--color-motif-deep)" }}
+    >
       <div className="relative min-h-[100svh] w-full">
-        {/* Phones: portrait photos · tablets / desktops: landscape photos */}
+        {/* Phones: portrait photos · tablets / desktops: the same set, cropped to fill */}
         {mobile.length > 0 && (
           <PhotoStack
             photos={mobile}
             activeIndex={activeIndex}
             alt={alt}
             className="md:hidden"
-            imageClassName="object-[center_35%]"
+            imageClassName="object-[center_25%]"
             sizes="100vw"
           />
         )}
@@ -257,28 +261,48 @@ function PhotoSeeYouThere() {
             activeIndex={activeIndex}
             alt={alt}
             className="hidden md:block"
-            imageClassName="object-[center_12%]"
+            imageClassName="object-[center_15%]"
             sizes="100vw"
           />
         )}
 
+        {/* Phones: the text sits low, so the bottom half deepens to wine */}
         <div
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 md:hidden"
           style={{
             background:
-              "linear-gradient(180deg, rgb(20 16 12 / 38%) 0%, rgb(20 16 12 / 18%) 38%, rgb(20 16 12 / 12%) 58%, rgb(20 16 12 / 42%) 100%)",
+              "linear-gradient(180deg, rgb(30 4 10 / 35%) 0%, rgb(30 4 10 / 6%) 26%, rgb(30 4 10 / 22%) 46%, rgb(40 5 14 / 76%) 66%, rgb(26 3 9 / 93%) 100%)",
+          }}
+          aria-hidden
+        />
+        {/* Tablets / desktops: the text is centred, so darken a soft oval behind it */}
+        <div
+          className="pointer-events-none absolute inset-0 hidden md:block"
+          style={{
+            background:
+              "radial-gradient(48% 42% at 50% 50%, rgb(30 4 10 / 66%) 0%, rgb(30 4 10 / 38%) 60%, transparent 100%), linear-gradient(180deg, rgb(30 4 10 / 38%) 0%, rgb(30 4 10 / 12%) 35%, rgb(30 4 10 / 12%) 65%, rgb(30 4 10 / 58%) 100%)",
           }}
           aria-hidden
         />
 
-        <div className="absolute inset-0 flex items-center justify-center px-5 pb-[18vh] pt-16 sm:pb-[14vh]">
-          <motion.h2
-            className="relative text-center"
-            initial={{ opacity: 0, y: 22, filter: "blur(8px)" }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            viewport={{ once: true, amount: 0.45 }}
-            transition={{ duration: 0.9, ease: entryEase }}
-          >
+        <motion.div
+          className="relative z-10 mx-auto flex min-h-[100svh] max-w-3xl flex-col items-center justify-end px-6 pb-[11svh] pt-24 text-center md:justify-center md:pb-24"
+          variants={stagger}
+          initial={reduceMotion ? false : "hidden"}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          {content.eyebrow ? (
+            <motion.p
+              variants={rise}
+              className={`${cinzel.className} text-[0.75rem] font-bold uppercase tracking-[0.3em] sm:text-[0.8125rem]`}
+              style={{ color: IVORY, textShadow: softShadow, paddingLeft: "0.3em" }}
+            >
+              {fill(content.eyebrow)}
+            </motion.p>
+          ) : null}
+
+          <motion.h2 variants={rise} className="relative mt-3 sm:mt-4">
             <span className="sr-only">
               {content.titleLine1} {content.titleLine2}
             </span>
@@ -292,7 +316,43 @@ function PhotoSeeYouThere() {
               <SpecialCharFont text={content.titleLine2} />
             </span>
           </motion.h2>
-        </div>
+
+          {content.script ? (
+            <motion.p
+              variants={rise}
+              className={`${aboveTheBeyond.className} mt-2 px-2 pb-1 pt-2 text-[1.9rem] leading-tight sm:mt-3 sm:text-[2.4rem] md:text-[2.75rem]`}
+              style={{ color: SCRIPT_GOLD, textShadow: softShadow }}
+            >
+              {fill(content.script)}
+            </motion.p>
+          ) : null}
+
+          {content.message ? (
+            <motion.p
+              variants={rise}
+              className="font-goudy-italic mx-auto mt-3 max-w-md text-[0.95rem] leading-relaxed sm:mt-4 sm:text-[1.0625rem]"
+              style={{ color: "#FFFFFF", textShadow: softShadow, fontWeight: 600 }}
+            >
+              {fill(content.message)}
+            </motion.p>
+          ) : null}
+
+          {/* Slideshow position */}
+          {slideCount > 1 && (
+            <motion.div variants={rise} className="mt-7 flex items-center gap-1.5" aria-hidden>
+              {Array.from({ length: slideCount }, (_, i) => (
+                <span
+                  key={i}
+                  className="h-[3px] rounded-full transition-all duration-[1400ms] ease-in-out"
+                  style={{
+                    width: i === activeIndex ? "1.5rem" : "0.5rem",
+                    background: i === activeIndex ? SCRIPT_GOLD : "rgb(255 250 244 / 45%)",
+                  }}
+                />
+              ))}
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </section>
   )

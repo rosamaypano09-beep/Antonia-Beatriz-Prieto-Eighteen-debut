@@ -7,13 +7,9 @@ import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 import localFont from "next/font/local"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import { Camera } from "lucide-react"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",

@@ -23,17 +23,13 @@ import {
   ChevronLeft,
   Check,
 } from "lucide-react"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { modalTitleSize, sectionType, welcomeTitleSize } from "@/lib/section-typography"
 import { fetchUntilReady, isAbortError } from "@/lib/fetch-until-ready"
 import { fetchInvitationList, invalidateInvitationData, readCachedInvitationList } from "@/lib/invitation-data"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",

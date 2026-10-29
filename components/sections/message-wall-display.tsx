@@ -5,15 +5,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react"
-import { Cinzel, Lora } from "next/font/google"
+import { Lora } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import { ArrowRight, BookOpen, X } from "lucide-react"
 import { sectionType } from "@/lib/section-typography"
 import { useSiteConfig } from "@/hooks/use-site-config"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 // Upright, screen-friendly serif for the messages (italic for the quote feel)
 const lora = Lora({

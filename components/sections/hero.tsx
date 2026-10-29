@@ -3,12 +3,13 @@
 import { useEffect, useMemo, useState } from "react"
 import { motion } from "motion/react"
 import { useHydratedReducedMotion } from "@/hooks/use-hydrated-reduced-motion"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import localFont from "next/font/local"
 import { withRomanNumerals } from "@/components/title-numerals"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { parseWeddingDate } from "@/lib/wedding-date"
 import { InvitePhotoBackdrop } from "@/components/loader/invite-photo-backdrop"
+import { GhostMarquee } from "@/components/loader/GhostMarquee"
 import { PlainAtmosphere } from "@/components/loader/PlainAtmosphere"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { siteConfig as defaultSiteConfig } from "@/content/site"
@@ -16,10 +17,6 @@ import { fillCelebrant } from "@/lib/celebrant"
 import "@/components/loader/loading-screen.css"
 import "./hero.css"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-})
 
 const theSeasons = localFont({
   src: "../../Font/Fontspring-DEMO-theseasons-reg.otf",
@@ -73,11 +70,21 @@ function HeroMotes({ layer }: { layer: "back" | "front" }) {
     </div>
   )
 }
-const heroTitleSize = {
-  main: "clamp(3.6rem, min(19vw, 20cqi), 10rem)",
-  script: "clamp(2.2rem, min(10vw, 11.5cqi), 4.75rem)",
-  overlap: "clamp(-0.1rem, 1.2vw - 0.6rem, 0.9rem)", // grows with width: tiny tuck on phones, sits lower on desktop
-} as const
+// Gold rule: line · gem · line (same ornament as the loading screen)
+function HeroRule() {
+  return (
+    <div className="home-hero-rule" aria-hidden="true">
+      <span className="home-hero-rule__line" />
+      <svg className="home-hero-rule__gem" viewBox="0 0 28 12">
+        <path d="M14 1 L20 6 L14 11 L8 6 Z" fill="none" stroke="currentColor" strokeWidth="1.1" />
+        <path d="M14 4 L16.5 6 L14 8 L11.5 6 Z" fill="currentColor" />
+        <circle cx="3" cy="6" r="1.2" fill="currentColor" />
+        <circle cx="25" cy="6" r="1.2" fill="currentColor" />
+      </svg>
+      <span className="home-hero-rule__line" />
+    </div>
+  )
+}
 
 interface TimeLeft {
   days: number
@@ -88,26 +95,6 @@ interface TimeLeft {
 
 function pad2(n: number) {
   return String(n).padStart(2, "0")
-}
-
-function formatCeremonyTimePhrase(raw: string) {
-  const match = raw.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i)
-  if (!match) return raw.toUpperCase()
-
-  let hour24 = Number(match[1])
-  const minutes = match[2] ?? "00"
-  const meridiem = (match[3] || "").toUpperCase()
-
-  if (meridiem === "PM" && hour24 !== 12) hour24 += 12
-  if (meridiem === "AM" && hour24 === 12) hour24 = 0
-
-  const period =
-    hour24 >= 17 ? "IN THE EVENING" : hour24 >= 12 ? "IN THE AFTERNOON" : "IN THE MORNING"
-
-  let displayHour = hour24 % 12
-  if (displayHour === 0) displayHour = 12
-
-  return `${displayHour}:${minutes} ${period}`
 }
 
 function useCeremonyCountdown() {
@@ -270,6 +257,9 @@ export function Hero() {
   const backgroundPhotos = loading.backgroundPhotos ?? []
   const hero = siteConfig.hero ?? defaultSiteConfig.hero
   const fill = (text: string) => fillCelebrant(text, siteConfig)
+  // Same edge lettering as the loading screen and envelope
+  const gala = loading.gala ?? defaultSiteConfig.loadingScreen.gala
+  const ghostText = (gala.ghostText ?? []).map((t) => fill(t)).filter(Boolean).join("  ·  ")
   const reduceMotion = useHydratedReducedMotion()
   const [visible, setVisible] = useState(false)
 
@@ -287,12 +277,6 @@ export function Hero() {
   const numericDate = Number.isNaN(weddingDate.getTime())
     ? `${parsedDate.month} ${parsedDate.day}, ${parsedDate.year}`
     : `${pad2(weddingDate.getMonth() + 1)}.${pad2(weddingDate.getDate())}.${parsedDate.year}`
-
-  const ceremonyTimePhrase = formatCeremonyTimePhrase(
-    siteConfig.ceremony.time ?? siteConfig.wedding.time,
-  )
-  const ceremonyName =
-    siteConfig.ceremony.location || siteConfig.wedding.venue
 
   const fadeUp = (delay: number) => {
     if (reduceMotion) {
@@ -347,72 +331,62 @@ export function Hero() {
         </>
       )}
 
+      {/* Ghost lettering drifting down the left edge and up the right */}
+      <GhostMarquee
+        text={ghostText}
+        className="home-hero-ghost"
+        fontClassName={theSeasons.className}
+        still={!!reduceMotion}
+      />
+
       {!reduceMotion && <HeroMotes layer="back" />}
 
-      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-5 pb-6 pt-[clamp(4.25rem,12vw,7rem)] text-center sm:px-8">
-        <motion.h1
-          className="relative mx-auto w-full max-w-full @container text-center"
-          style={
-            {
-              "--hero-title-size": heroTitleSize.main,
-              "--hero-script-size": heroTitleSize.script,
-              "--hero-script-overlap": heroTitleSize.overlap,
-            } as React.CSSProperties
-          }
-          {...fadeUp(0.08)}
-        >
+      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-5 pb-[clamp(2.5rem,9dvh,5rem)] pt-[clamp(4.25rem,12vw,7rem)] text-center sm:px-8">
+        <motion.h1 className="relative mx-auto w-full max-w-full text-center" {...fadeUp(0.08)}>
           {hero.kicker && (
             <span
               aria-hidden
-              className={`${cinzel.className} home-hero-eyebrow relative mb-3 block text-[clamp(0.68rem,2.8vw,0.86rem)] font-medium uppercase tracking-[0.3em] sm:mb-4`}
+              className={`${cinzel.className} home-hero-eyebrow home-hero-kicker relative block font-semibold uppercase`}
             >
               {fill(hero.kicker)}
             </span>
           )}
           <span
             aria-hidden
-            className="home-hero-title-glow pointer-events-none absolute left-1/2 top-[42%] h-[min(18rem,58vw)] w-[min(36rem,96%)] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            className="home-hero-title-glow pointer-events-none absolute left-1/2 top-[48%] h-[min(18rem,58vw)] w-[min(36rem,96%)] -translate-x-1/2 -translate-y-1/2 rounded-full"
           />
           <span className="sr-only">{fill(hero.srTitle)}</span>
-          <span
-            aria-hidden
-            className={`${theSeasons.className} home-hero-title-main relative block whitespace-nowrap uppercase leading-[0.82] tracking-[0.03em] min-[400px]:tracking-[0.05em] sm:tracking-[0.07em] md:tracking-[0.08em]`}
-            style={{ fontSize: "var(--hero-title-size)" }}
-          >
+          {/* Nickname in large gold script — padded so the swashes never clip */}
+          <span aria-hidden className={`${aboveTheBeyond.className} home-hero-name relative block`}>
             {fill(hero.titleMain)}
           </span>
-          <span
-            aria-hidden
-            className={`${aboveTheBeyond.className} home-hero-title-script relative z-10 mx-auto block w-fit max-w-full px-1 leading-[0.82] sm:leading-[0.84]`}
-            style={{
-              marginTop: "var(--hero-script-overlap)",
-              fontSize: "var(--hero-script-size)",
-            }}
-          >
-            {withRomanNumerals(fill(hero.titleScript), theSeasons.className)}
-          </span>
+          {hero.eyebrow && (
+            <span aria-hidden className={`${cinzel.className} home-hero-fullname relative`}>
+              {fill(hero.eyebrow)}
+            </span>
+          )}
         </motion.h1>
 
-        <motion.p
-          className={`${cinzel.className} home-hero-eyebrow mt-[clamp(1.6rem,6vw,3rem)] max-w-[22rem] text-[clamp(0.68rem,2.8vw,0.86rem)] font-medium uppercase leading-[1.7] tracking-[0.18em] [text-wrap:balance] sm:max-w-none sm:tracking-[0.22em]`}
-          {...fadeUp(0.2)}
-        >
-          {fill(hero.eyebrow)}
-        </motion.p>
+        <motion.div className="w-full" {...fadeUp(0.18)}>
+          <HeroRule />
+        </motion.div>
+
+        {hero.titleScript && (
+          <motion.p
+            className={`${aboveTheBeyond.className} home-hero-title-script home-hero-turns`}
+            {...fadeUp(0.24)}
+          >
+            {withRomanNumerals(fill(hero.titleScript), theSeasons.className)}
+          </motion.p>
+        )}
 
         <motion.p
-          className={`${theSeasons.className} home-hero-date mt-4 text-[clamp(1.85rem,8.5vw,3.65rem)] font-normal leading-none tracking-[0.08em] sm:mt-5`}
-          {...fadeUp(0.28)}
+          className={`${theSeasons.className} home-hero-date text-[clamp(1.85rem,8.5vw,3.4rem)] font-normal leading-none tracking-[0.08em]`}
+          {...fadeUp(0.3)}
         >
           {numericDate}
         </motion.p>
 
-        <motion.p
-          className={`${cinzel.className} home-hero-meta mt-4 text-[0.62rem] font-medium uppercase tracking-[0.18em] sm:text-[0.7rem] sm:tracking-[0.2em]`}
-          {...fadeUp(0.36)}
-        >
-          {ceremonyName} · {ceremonyTimePhrase}
-        </motion.p>
       </div>
 
       <motion.div className="home-hero-countdown-bar relative z-10 mt-auto w-full" {...fadeUp(0.42)}>

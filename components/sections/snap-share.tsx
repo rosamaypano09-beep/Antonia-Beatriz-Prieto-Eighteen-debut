@@ -2,7 +2,8 @@
 
 import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useEffect, useState } from "react"
-import { Cinzel, Lora } from "next/font/google"
+import { Lora } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import localFont from "next/font/local"
 import { Instagram, Facebook, Twitter, Share2, Copy, Download, Check } from "lucide-react"
 import { useQrColors } from "@/hooks/use-css-color"
@@ -11,10 +12,6 @@ import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import Image from "next/image"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 // Upright, screen-friendly serif for card text (same as the My Story paragraphs)
 const lora = Lora({
@@ -466,9 +463,8 @@ export function SnapShare() {
           <div className="mt-6 grid grid-cols-1 items-start gap-5 sm:mt-8 sm:gap-6 md:mt-10 lg:grid-cols-2 lg:gap-8">
             <ContentCard>
               <CardTitle>{content.moments.title}</CardTitle>
-              {/* Two tall portrait frames on top (the photos are 9:16 portraits, so the frames
-                  are 3:4 and anchored near the top to keep faces in view), one wide 16:9 frame
-                  below for the landscape photo. */}
+              {/* Two portrait frames on top, one wider frame below. Every photo is a 9:16
+                  portrait, so each frame is anchored near the top to keep the face in view. */}
               <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:gap-3">
                 {[momentA, momentB].filter(Boolean).map((src, i) => (
                   <div
@@ -487,7 +483,7 @@ export function SnapShare() {
                 ))}
                 {momentC ? (
                   <div
-                    className="relative col-span-2 aspect-video overflow-hidden rounded-xl"
+                    className="relative col-span-2 aspect-[4/3] overflow-hidden rounded-xl"
                     style={{ boxShadow: `0 0 0 1px ${HAIRLINE}, 0 10px 22px -14px color-mix(in srgb, var(--color-coastal-deep) 55%, transparent)` }}
                   >
                     <Image
@@ -495,7 +491,7 @@ export function SnapShare() {
                       alt={`${celebrant} moment 3`}
                       fill
                       sizes="(max-width: 1024px) 90vw, 45vw"
-                      className="object-cover object-center"
+                      className="object-cover object-[50%_18%]"
                     />
                   </div>
                 ) : null}

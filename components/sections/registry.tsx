@@ -4,21 +4,18 @@ import { celebrantName, fillCelebrant } from "@/lib/celebrant"
 import { useState, type CSSProperties } from "react"
 import Image from "next/image"
 import localFont from "next/font/local"
-import { Cinzel, Cormorant_Garamond } from "next/font/google"
+import { Cormorant_Garamond } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import { Gift, Heart } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react"
 import { useSiteConfig } from "@/hooks/use-site-config"
-import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
+import { layeredSectionTitleSize } from "@/lib/section-typography"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 // Refined Garamond for the letter — calligraphic, keepsake feel on the ivory card
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: ["500", "600", "700"],
   style: ["normal", "italic"],
   display: "swap",
 })
@@ -43,10 +40,6 @@ const textLift =
 const onBg = { color: "#fff", textShadow: textLift } as const
 const onBgGold = { color: "var(--color-welcome-gold)", textShadow: textLift } as const
 const SEAL_GRADIENT = "linear-gradient(180deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 100%)"
-
-const ct = {
-  bodyLg: sectionType.textRelaxed,
-} as const
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -155,7 +148,7 @@ export function Registry() {
         >
           <DiamondDivider />
           <p
-            className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-semibold uppercase leading-snug tracking-[0.16em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] sm:mt-5 sm:text-[0.875rem] sm:tracking-[0.22em]`}
+            className={`${cinzel.className} mx-auto mt-4 max-w-[20rem] px-2 text-[0.6875rem] font-bold uppercase leading-snug tracking-[0.16em] min-[400px]:max-w-none min-[400px]:text-[0.75rem] sm:mt-5 sm:text-[0.875rem] sm:tracking-[0.22em]`}
             style={onBgGold}
           >
             {content.eyebrow}
@@ -164,8 +157,8 @@ export function Registry() {
             <RegistryTitle title={content.title} subtitle={content.subtitle} />
           </div>
           <p
-            className={`font-goudy-italic mx-auto mt-4 max-w-xl px-2 sm:mt-5 md:mt-6 ${ct.bodyLg}`}
-            style={{ ...onBg, fontWeight: 600 }}
+            className={`${cormorant.className} mx-auto mt-4 max-w-xl px-2 text-[1.1rem] font-semibold italic leading-relaxed sm:mt-5 sm:text-[1.25rem] md:mt-6`}
+            style={onBg}
           >
             {content.description}
           </p>
@@ -202,7 +195,7 @@ export function Registry() {
             {salutation ? (
               <motion.div variants={itemVariants} className="relative mb-6 sm:mb-7">
                 <p
-                  className={`${cinzel.className} text-[0.8rem] font-semibold uppercase tracking-[0.24em] sm:text-[0.9rem] sm:tracking-[0.28em]`}
+                  className={`${cinzel.className} text-[0.85rem] font-bold uppercase tracking-[0.22em] sm:text-[0.95rem] sm:tracking-[0.26em]`}
                   style={{ color: c.title }}
                 >
                   {salutation}
@@ -216,7 +209,7 @@ export function Registry() {
             ) : null}
 
             <div
-              className={`${cormorant.className} relative mx-auto max-w-[34rem] space-y-5 text-center text-[1.0625rem] font-medium leading-[1.8] tracking-[0.01em] [font-feature-settings:'liga','kern'] [text-wrap:pretty] sm:space-y-6 sm:text-[1.15rem] md:text-[1.2rem]`}
+              className={`${cormorant.className} relative mx-auto max-w-[34rem] space-y-5 text-center text-[1.15rem] font-semibold leading-[1.7] tracking-[0.005em] [font-feature-settings:'liga','kern'] [text-wrap:pretty] sm:space-y-6 sm:text-[1.25rem] md:text-[1.3rem]`}
               style={{ color: c.body }}
             >
               {letter.map((text, i) => (
@@ -236,10 +229,12 @@ export function Registry() {
                 transition={{ duration: 0.6, ease }}
               >
                 <p
-                  className={`${cinzel.className} text-[0.65rem] font-semibold uppercase tracking-[0.22em] sm:text-xs`}
+                  className={`${cinzel.className} flex items-center justify-center gap-2.5 text-[0.7rem] font-bold uppercase tracking-[0.22em] sm:text-[0.78rem]`}
                   style={{ color: c.eyebrow }}
                 >
+                  <span className="h-px w-8 sm:w-10" style={{ background: `linear-gradient(to right, transparent, ${c.eyebrow})` }} aria-hidden />
                   {content.accountsTitle}
+                  <span className="h-px w-8 sm:w-10" style={{ background: `linear-gradient(to left, transparent, ${c.eyebrow})` }} aria-hidden />
                 </p>
 
                 {accounts.length > 1 && (
@@ -260,7 +255,7 @@ export function Registry() {
                           aria-selected={selected}
                           aria-controls="registry-tabpanel"
                           onClick={() => setActiveTab(i)}
-                          className={`${cinzel.className} rounded-full px-4 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] transition-all duration-300 sm:px-5 sm:text-[0.72rem]`}
+                          className={`${cinzel.className} rounded-full px-5 py-1.5 text-[0.7rem] font-bold uppercase tracking-[0.16em] transition-all duration-300 sm:px-5 sm:text-[0.72rem]`}
                           style={
                             selected
                               ? {
@@ -325,13 +320,13 @@ export function Registry() {
                         </span>
                       )}
                       {active.accountName ? (
-                        <p className={`${cormorant.className} mt-3 text-base font-semibold`} style={{ color: c.body }}>
+                        <p className={`${cormorant.className} mt-3 text-[1.05rem] font-bold`} style={{ color: c.body }}>
                           {active.accountName}
                         </p>
                       ) : null}
                       {active.accountNumber ? (
                         <p
-                          className={`${cinzel.className} mt-1 text-[0.8rem] font-semibold tabular-nums tracking-[0.12em]`}
+                          className={`${cinzel.className} mt-1 text-[0.85rem] font-bold tabular-nums tracking-[0.12em]`}
                           style={{ color: c.title }}
                         >
                           {active.accountNumber}
@@ -339,6 +334,14 @@ export function Registry() {
                       ) : null}
                     </motion.div>
                   </AnimatePresence>
+                  {content.accountsNote ? (
+                    <p
+                      className={`${cormorant.className} mt-3 text-[0.95rem] font-semibold italic leading-snug sm:text-[1rem]`}
+                      style={{ color: c.soft }}
+                    >
+                      {content.accountsNote}
+                    </p>
+                  ) : null}
                 </div>
               </motion.div>
             )}
@@ -348,14 +351,14 @@ export function Registry() {
             {/* Sign-off */}
             <motion.div variants={itemVariants} className="relative space-y-1.5">
               {content.thankYou ? (
-                <p className={`${cormorant.className} text-[1.0625rem] font-semibold tracking-[0.01em] sm:text-[1.15rem]`} style={{ color: c.body }}>
+                <p className={`${cormorant.className} text-[1.15rem] font-bold tracking-[0.01em] sm:text-[1.25rem]`} style={{ color: c.body }}>
                   {content.thankYou}
                 </p>
               ) : null}
-              <p className={`${cormorant.className} text-[1.0625rem] font-medium italic sm:text-[1.15rem]`} style={{ color: c.soft }}>
+              <p className={`${cormorant.className} text-[1.15rem] font-semibold italic sm:text-[1.25rem]`} style={{ color: c.soft }}>
                 {content.signOff}
               </p>
-              <p className={`${aboveTheBeyond.className} pt-1 text-2xl leading-tight sm:text-3xl`} style={{ color: c.script }}>
+              <p className={`${aboveTheBeyond.className} px-2 pb-1 pt-2 text-[2.1rem] leading-tight sm:text-[2.6rem]`} style={{ color: c.script }}>
                 {content.signature ? fillCelebrant(content.signature, siteConfig) : celebrant}
               </p>
               <Heart className="mx-auto mt-2 h-3.5 w-3.5" style={{ color: c.eyebrow, fill: c.eyebrow }} aria-hidden />

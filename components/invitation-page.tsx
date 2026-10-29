@@ -9,6 +9,7 @@ import { Hero as InvitationHero } from "@/components/loader/Hero"
 import { LoadingScreen } from "@/components/loader/LoadingScreen"
 import { InvitePhotoBackdrop } from "@/components/loader/invite-photo-backdrop"
 import { Navbar } from "@/components/navbar"
+import { RevealSection, ScrollProgressBar } from "@/components/scroll-reveal"
 import { AppState } from "@/components/types"
 import { prefetchInvitationData } from "@/lib/invitation-data"
 import { useSiteConfig } from "@/hooks/use-site-config"
@@ -256,6 +257,7 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
                   <Navbar />
                 </motion.div>
               )}
+              {appState === AppState.DETAILS && <ScrollProgressBar />}
               {/* Spacer so content starts below fixed navbar (h-12 sm:h-14 md:h-16) */}
               {appState === AppState.DETAILS && <div className="h-12 sm:h-14 md:h-16" aria-hidden />}
               <motion.div
@@ -272,24 +274,27 @@ export function InvitationPage({ sponsorsList, showEntourage = true }: Invitatio
                 animate={cinematicEntry ? "show" : detailsVisible ? "show" : "hidden"}
                 transition={cinematicEntry ? undefined : { duration: 0.01 }}
               >
-               <Welcome />
+              {/* Each section rises into view as it is scrolled to (components/scroll-reveal.tsx) */}
+              <RevealSection><Welcome /></RevealSection>
               {/* <CoupleVideo />  */}
-              <LoveStory />
-              <Countdown />
-              <Gallery />
-              <Messages />
+              <RevealSection><LoveStory /></RevealSection>
+              <RevealSection><Countdown /></RevealSection>
+              <RevealSection><Gallery /></RevealSection>
+              <RevealSection><Messages /></RevealSection>
               {/* <MessageVideo /> */}
-              <Details />
-              <WeddingTimeline />
-              {showEntourage && siteConfig.entourage.show !== false && <Entourage sponsorsList={sponsorsList} />}
-              <GuestList />
-              <BookOfGuests />
-              <Registry />
-              <FAQ />
-              <WeddingPlaylist /> 
-              <SnapShare />
-              <SeeYouThere />
-              <Footer />
+              <RevealSection><Details /></RevealSection>
+              <RevealSection><WeddingTimeline /></RevealSection>
+              {showEntourage && siteConfig.entourage.show !== false && (
+                <RevealSection><Entourage sponsorsList={sponsorsList} /></RevealSection>
+              )}
+              <RevealSection><GuestList /></RevealSection>
+              <RevealSection><BookOfGuests /></RevealSection>
+              <RevealSection><Registry /></RevealSection>
+              <RevealSection><FAQ /></RevealSection>
+              <RevealSection><WeddingPlaylist /></RevealSection>
+              <RevealSection><SnapShare /></RevealSection>
+              <RevealSection><SeeYouThere /></RevealSection>
+              <RevealSection><Footer /></RevealSection>
               </motion.div>
             </div>
           </motion.div>

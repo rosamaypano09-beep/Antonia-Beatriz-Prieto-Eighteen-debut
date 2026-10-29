@@ -25,12 +25,9 @@ import { RisingMotes } from "@/components/rising-motes"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 import { sectionType } from "@/lib/section-typography"
-import { Cinzel, Lora } from "next/font/google"
+import { Lora } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 // Upright, screen-friendly serif for card text (same as the My Story paragraphs)
 const lora = Lora({

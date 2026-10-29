@@ -1,14 +1,14 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Cinzel, Playfair_Display } from "next/font/google"
+import { Playfair_Display } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import { Check, Copy, ExternalLink, Link2, Mail, Pencil, Phone, RotateCcw, Share2, X } from "lucide-react"
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { celebrantName } from "@/lib/celebrant"
 import { ShareSheet, copyTextNow } from "@/components/share-platforms"
 
-const cinzel = Cinzel({ subsets: ["latin"], weight: ["500", "600"] })
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["500", "600"] })
 
 const FIELD =

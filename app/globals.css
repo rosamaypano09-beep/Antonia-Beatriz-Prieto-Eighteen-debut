@@ -771,7 +771,7 @@ img[src*="%2Flovestorydeco%2F"] {
 
 /* Cinzel font utility class */
 .cinzel {
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;

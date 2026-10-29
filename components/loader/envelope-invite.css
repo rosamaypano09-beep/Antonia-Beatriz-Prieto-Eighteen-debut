@@ -176,7 +176,7 @@
   align-items: center;
   gap: clamp(0.1rem, 0.8vw, 0.35rem);
   transform: translateY(-50%);
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   font-size: clamp(3.25rem, 13vw, 7.5rem);
@@ -687,7 +687,7 @@
 }
 
 .env-invite-letter-label {
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: 0.95em;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -697,7 +697,7 @@
 }
 
 .env-invite-letter-date {
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: 1.72em;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -718,7 +718,7 @@
 }
 
 .env-invite-letter-sub {
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: 0.78em;
   font-weight: 500;
   letter-spacing: 0.1em;
@@ -1316,7 +1316,7 @@
   margin: 1.85rem 0 0;
   padding: 0;
   text-align: center;
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: clamp(0.68rem, 2.45vw, 0.84rem);
   font-weight: 600;
   line-height: 1.4;
@@ -1343,7 +1343,7 @@
   width: 100%;
   margin: 0 0 0.45rem;
   text-align: center;
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: clamp(0.92rem, 3.6vw, 1.28rem);
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -1435,7 +1435,7 @@
 .env-invite-reveal-copy h2 {
   display: block;
   width: 100%;
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: clamp(0.66rem, 2.1vw, 0.82rem);
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -1473,7 +1473,7 @@
   margin: 0;
   padding: 0.7rem 1.85rem;
   min-height: 3rem;
-  font-family: "Cinzel", serif;
+  font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: clamp(0.72rem, 2.85vw, 0.9rem);
   font-weight: 600;
   line-height: 1.25;
@@ -2890,17 +2890,15 @@
   margin: 0.1em 0 0.2em;
 }
 
+/* Nickname in script; full name in tracked caps beneath */
 .env-invite-letter-title__main {
   display: block;
-  font-size: 2.4em;
-  line-height: 0.8;
-  letter-spacing: 0.08em;
-  padding-left: 0.08em; /* balances trailing tracking so the name is centered */
-  text-transform: uppercase;
+  font-size: 3.1em;
+  line-height: 1;
+  padding: 0 0.2em;
   white-space: nowrap;
   color: var(--color-motif-deep);
-  /* The Seasons ships one weight — a hairline stroke gives it a bold, inked look */
-  -webkit-text-stroke: 0.04em currentColor;
+  -webkit-text-stroke: 0.015em currentColor;
   text-shadow: 0 1px 0 color-mix(in srgb, white 70%, transparent);
 }
 
@@ -2908,13 +2906,15 @@
   position: relative;
   z-index: 1;
   display: block;
-  margin-top: -0.18em;
-  padding: 0 0.15em;
-  font-size: 1.85em;
-  line-height: 0.9;
+  margin-top: 0.1em;
+  margin-right: -0.26em; /* balances trailing tracking so the name is centered */
+  font-size: 0.62em;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
   white-space: nowrap;
   color: color-mix(in srgb, var(--color-welcome-gold) 72%, var(--color-motif-deep));
-  -webkit-text-stroke: 0.02em currentColor;
   text-shadow: 0 1px 0 color-mix(in srgb, white 80%, transparent);
 }
 
@@ -3410,4 +3410,303 @@
     gap: 0.45em;
     padding-top: 0.45em;
   }
+}
+
+/* ---- Card title: nickname in gold-wine script, full name in tracked Cinzel caps ----
+   Last in the file so it wins over the earlier serif-name sizing above. */
+.env-invite-screen .env-invite-letter-title .env-invite-letter-title__main {
+  font-size: 3.2em;
+  line-height: 1;
+  letter-spacing: 0;
+  padding: 0.12em 0.3em 0.16em;
+}
+.env-invite-screen .env-invite-letter-title .env-invite-letter-title__script {
+  max-width: 100%;
+  margin-top: 0.05em;
+  margin-right: -0.24em;
+  padding: 0;
+  font-size: 0.6em;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  white-space: normal;
+  text-wrap: balance;
+  -webkit-text-stroke: 0;
+}
+@media (max-width: 767px) {
+  .env-invite-screen .env-invite-letter-title .env-invite-letter-title__main {
+    font-size: 2.8em;
+  }
+  .env-invite-screen .env-invite-letter-title .env-invite-letter-title__script {
+    font-size: 0.54em;
+    letter-spacing: 0.2em;
+    margin-right: -0.2em;
+  }
+}
+
+/* ---- Ghost marquee (shared with the loading screen) ----
+   Behind the envelope and the CTA, in front of the photo backdrop and glow. */
+.env-invite-ghost-marquee {
+  position: fixed;
+  z-index: 1;
+  animation: env-ghost-in 1.6s ease both;
+}
+@keyframes env-ghost-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   Paper card — refined (photos mode)
+   Warm cotton stock with a fine grain, a gold-foil double frame with corner
+   brackets, gold-foil lettering and a deeper, warmer lift off the envelope.
+   Last in the file so it wins over the earlier card layers above.
+   ========================================================================== */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter {
+  --paper-gold: color-mix(in srgb, var(--color-welcome-gold) 82%, #8a5a12);
+  --paper-gold-soft: color-mix(in srgb, var(--color-welcome-gold) 45%, transparent);
+  background:
+    /* fine paper grain */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.3 0 0 0 0 0.16 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    /* light falling from the top, warmer toward the bottom */
+    radial-gradient(130% 70% at 50% 0%, rgba(255, 255, 255, 0.85) 0%, transparent 62%),
+    radial-gradient(120% 60% at 50% 100%, color-mix(in srgb, var(--color-welcome-gold) 14%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, #fffbf3 0%, var(--color-motif-soft) 55%, var(--color-motif-cream) 100%);
+  border: 1px solid color-mix(in srgb, var(--color-welcome-gold) 38%, transparent);
+  box-shadow:
+    0 22px 44px rgba(40, 0, 8, 0.34),
+    0 6px 14px rgba(40, 0, 8, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.65),
+    inset 0 0 42px color-mix(in srgb, var(--color-welcome-gold) 12%, transparent);
+}
+
+/* Gold-foil double frame */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-frame {
+  border: 1px solid var(--paper-gold);
+  box-shadow: 0 0 0 0.5px rgba(255, 244, 214, 0.6) inset;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-frame::after {
+  inset: 3px;
+  border-color: var(--paper-gold-soft);
+}
+/* Corner brackets just outside the frame, like engraved stationery */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-frame::before {
+  --c: var(--paper-gold);
+  --len: 12px;
+  --w: 1.5px;
+  content: '';
+  position: absolute;
+  inset: -4px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--c), var(--c)) left top / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) left top / var(--w) var(--len) no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / var(--w) var(--len) no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / var(--w) var(--len) no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / var(--w) var(--len) no-repeat;
+}
+
+/* Monogram watermark: a touch fainter so the lettering leads */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-watermark {
+  opacity: 0.075;
+}
+
+/* "THE DEBUT OF" in gold foil */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-eyebrow {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-welcome-gold) 70%, #fff3cf) 0%, var(--paper-gold) 55%, color-mix(in srgb, var(--color-welcome-gold) 60%, var(--color-motif-deep)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+/* Dividers: gold foil line, the diamond filled with the paper colour */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-divider {
+  background: linear-gradient(90deg, transparent, var(--paper-gold) 28%, var(--paper-gold) 72%, transparent);
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-divider::after {
+  background: linear-gradient(135deg, #fff6dc, var(--color-motif-soft));
+  border-color: var(--paper-gold);
+}
+
+/* "Bea": deep wine into gold foil */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-title .env-invite-letter-title__main {
+  background: linear-gradient(170deg, var(--color-motif-accent) 0%, var(--color-motif-deep) 55%, var(--paper-gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.8));
+}
+
+/* Full name between two short gold hairlines (matches the loading screen) */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-title .env-invite-letter-title__script {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  color: var(--color-motif-deep);
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-title .env-invite-letter-title__script::before,
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-title .env-invite-letter-title__script::after {
+  content: '';
+  flex: none;
+  width: 1.4em;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--paper-gold));
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-title .env-invite-letter-title__script::after {
+  background: linear-gradient(270deg, transparent, var(--paper-gold));
+}
+
+/* "18th Birthday" in wine with a gold script */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-occasion__script {
+  color: var(--paper-gold);
+  -webkit-text-stroke-color: var(--paper-gold);
+}
+
+/* Date: gold rules, wine numerals */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-date__side {
+  border-color: var(--paper-gold-soft);
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-date__weekday {
+  color: var(--paper-gold);
+}
+
+/* ---- Paper size: no polaroids any more, so the card takes their room ----
+   Phones: about three quarters of the envelope instead of 40%, and taller to fit
+   the invitation line + time and venue. Desktop: the open card widens to ~50vw. */
+@media (max-width: 767px) {
+  .env-invite-screen:not(.env-invite-screen--plain) {
+    --env-letter-w: clamp(230px, calc(var(--env-width) * 0.74), 330px);
+    --env-letter-h: clamp(300px, calc(var(--env-width) * 1), 440px);
+  }
+  .env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter-inner {
+    font-size: clamp(11px, calc(var(--env-letter-w) * 0.055), 15px);
+  }
+}
+@media (min-width: 768px) {
+  .env-invite-screen:not(.env-invite-screen--plain)[data-phase="flap-open"],
+  .env-invite-screen:not(.env-invite-screen--plain)[data-phase="rising"],
+  .env-invite-screen:not(.env-invite-screen--plain)[data-phase="revealed"],
+  .env-invite-screen:not(.env-invite-screen--plain)[data-phase="cta"] {
+    --env-letter-w: clamp(440px, 50vw, 720px);
+  }
+}
+
+/* Invitation line under "You're Invited" — soft italic serif */
+.env-invite-letter-line {
+  max-width: 21em;
+  margin-top: 0.15em;
+  font-family: var(--env-font-tagline), "Lora", Georgia, serif;
+  font-size: 0.86em;
+  font-style: italic;
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
+  color: color-mix(in srgb, var(--color-motif-deep) 78%, var(--color-welcome-text));
+}
+
+/* ---- Paper content: compact, top-stacked, nothing clipped ----
+   The card now stops lower with its bottom still in the pocket, so the text
+   stacks from the top in one tight column instead of centering on the card. */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-inner {
+  grid-template-rows: auto auto auto;
+  align-content: start;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-top {
+  gap: 0.4em;
+  padding-bottom: 0.35em;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-bottom {
+  gap: 0.35em;
+  padding-top: 0.15em;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-line {
+  max-width: 17em;
+  margin-top: 0.05em;
+  font-size: 0.82em;
+  line-height: 1.4;
+}
+/* "Bea": room above and below for the swashes, without extra gap */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-title .env-invite-letter-title__main {
+  padding: 0.14em 0.3em 0.1em;
+  line-height: 0.95;
+}
+/* Full name on one line */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-title .env-invite-letter-title__script {
+  margin: 0.05em -0.18em 0 0;
+  padding: 0;
+  white-space: nowrap;
+  letter-spacing: 0.18em;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-title .env-invite-letter-title__script::before,
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-title .env-invite-letter-title__script::after {
+  width: 1em;
+}
+/* "18th Birthday": clear of the name, script loops not clipped */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-occasion {
+  margin: 0.35em 0 0;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-occasion__script {
+  padding: 0.12em 0.3em 0.18em 0.2em;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-divider {
+  margin: 0.05em auto;
+}
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-date {
+  gap: 0.2em;
+}
+
+@media (max-width: 767px) {
+  /* A little shorter now that time + venue are gone */
+  .env-invite-screen:not(.env-invite-screen--plain) {
+    --env-letter-h: clamp(290px, calc(var(--env-width) * 0.94), 420px);
+  }
+  .env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-inner {
+    padding: 1.5em 1.2em 0;
+  }
+  .env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-title .env-invite-letter-title__script {
+    font-size: 0.56em;
+    letter-spacing: 0.15em;
+    margin-right: -0.15em;
+  }
+}
+
+/* ---- "Bea": no clipped swashes ----
+   The gold-wine fill is background-clip:text, which only paints inside the
+   element's padding box. The script's tall "B" and its lower loops reach past
+   the line box, so give the box generous padding and pull it back with equal
+   negative margins: every stroke is painted and the layout doesn't grow. */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-title .env-invite-letter-title__main {
+  padding: 0.42em 0.5em 0.36em;
+  /* Top margin cancels less of the padding, leaving a clear gap under the invitation line */
+  margin: -0.04em -0.5em -0.24em;
+  line-height: 1;
+  overflow: visible;
+}
+
+/* ---- "Bea": solid ink instead of a clipped gradient ----
+   background-clip:text still cut the tall "B" swash, so the name is set in a
+   solid wine colour (never clipped) with a white edge highlight and a soft gold
+   glow for the foil feel. The top padding keeps the space under the invitation line. */
+.env-invite-screen:not(.env-invite-screen--plain) .env-invite-letter .env-invite-letter-title .env-invite-letter-title__main {
+  padding: 0.2em 0.3em 0.12em;
+  margin: 0 -0.3em;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: color-mix(in srgb, var(--color-motif-accent) 55%, var(--color-motif-deep));
+  -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke: 0.01em currentColor;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 14px color-mix(in srgb, var(--color-welcome-gold) 35%, transparent);
+  filter: none;
 }

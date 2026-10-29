@@ -4,19 +4,18 @@ import { celebrantName } from "@/lib/celebrant"
 import { useState, type CSSProperties, type ReactNode } from "react"
 import { ChevronDown } from "lucide-react"
 import { motion, useReducedMotion, type Variants } from "motion/react"
-import { Cinzel, Lora, Playfair_Display } from "next/font/google"
+import { Lora, Playfair_Display } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { layeredSectionTitleSize, sectionType } from "@/lib/section-typography"
 import { PlainBubbles } from "@/components/loader/PlainBubbles"
 import { RisingMotes } from "@/components/rising-motes"
+import { GhostMarquee } from "@/components/loader/GhostMarquee"
+import { ghostTextFor } from "@/lib/ghost-text"
 import "@/components/loader/loading-screen.css"
 import "@/components/sections/love-story-red.css"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 // Upright, screen-friendly serif for the answers (same as the My Story paragraphs)
 const lora = Lora({
@@ -253,6 +252,14 @@ export function FAQ() {
       {/* Red circle pattern (colors: components/sections/love-story-red.css) */}
       <PlainBubbles />
       <RisingMotes count={30} />
+      {/* Ghost lettering down the left edge and up the right (same as the loading screen) */}
+      <GhostMarquee
+        text={ghostTextFor(siteConfig)}
+        className="section-ghost"
+        fontClassName={theSeasons.className}
+        still={!!reduceMotion}
+        repeat={6}
+      />
       <section
         id="faq"
         className="relative z-10 overflow-hidden pt-14 pb-12 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20"

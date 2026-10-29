@@ -4,11 +4,13 @@ import { fillCelebrant } from '@/lib/celebrant';
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useHydratedReducedMotion } from '@/hooks/use-hydrated-reduced-motion';
-import { Cinzel, Cormorant_Garamond, Playfair_Display } from 'next/font/google';
+import { Cormorant_Garamond, Playfair_Display } from 'next/font/google';
+import { cinzel } from '@/lib/fonts';
 import localFont from 'next/font/local';
 import { useSiteConfig } from '@/hooks/use-site-config';
 import { siteConfig as defaultSiteConfig } from '@/content/site';
 import { InvitePhotoBackdrop } from '@/components/loader/invite-photo-backdrop';
+import { GhostMarquee } from '@/components/loader/GhostMarquee';
 import './loading-screen.css';
 import './loading-screen-gala.css';
 
@@ -18,11 +20,6 @@ const playfair = Playfair_Display({
   subsets: ['latin'],
   weight: ['500', '600', '700'],
   variable: '--gala-font-display',
-});
-const cinzel = Cinzel({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--gala-font-caps',
 });
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -52,6 +49,8 @@ interface LoadingScreenProps {
 }
 
 const FADE_OUT_MS = 1400;
+// On a very slow connection, stop waiting for files after this long and finish anyway
+const MAX_WAIT_MS = 15000;
 
 // When the current loading run first painted (performance.now() clock). Module-level so it
 // outlives a remount: a hydration fallback or parent re-render that rebuilds this DOM would
@@ -66,25 +65,6 @@ const RUN_START_SCRIPT = `window.${RUN_START_KEY}=performance.now()`;
 // A rebuilt animation is this far behind the run before it gets fast-forwarded
 const RESYNC_SLACK_MS = 120;
 
-// Entrance timeline (ms). CSS-delay driven so it plays from first paint, before hydration.
-// The velvet curtains part first; everything else enters as they open.
-const T = {
-  eyebrow: 900,
-  topRule: 1050,
-  nameStart: 1150,
-  nameStagger: 70,
-  subtitle: 1900,
-  photo: 1300,
-  taglines: 2300,
-  kicker: 2700,
-  age: 2900,
-  occasion: 3150,
-  bottomRule: 3500,
-  details: 3650,
-  detailsStagger: 160,
-  progress: 4300,
-} as const;
-
 // Gold dust drifting up over the velvet
 const MOTES = Array.from({ length: 22 }, (_, i) => ({
   x: (i * 37 + 11) % 100,
@@ -94,11 +74,9 @@ const MOTES = Array.from({ length: 22 }, (_, i) => ({
   drift: (i % 2 === 0 ? 1 : -1) * (10 + ((i * 11) % 22)),
 }));
 
-const delay = (ms: number) => ({ '--gala-delay': `${ms}ms` }) as React.CSSProperties;
-
-function GoldRule({ className = '', style }: { className?: string; style?: React.CSSProperties }) {
+function GoldRule() {
   return (
-    <div className={`gala-rule ${className}`} style={style} aria-hidden="true">
+    <div className="gala-rule" aria-hidden="true">
       <span className="gala-rule__line" />
       <svg className="gala-rule__gem" viewBox="0 0 28 12">
         <path d="M14 1 L20 6 L14 11 L8 6 Z" fill="none" stroke="currentColor" strokeWidth="1.1" />
@@ -140,26 +118,13 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
   const [fadeOut, setFadeOut] = useState(false);
   const [statusIndex, setStatusIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   // Time already played before this mount (0 on a normal first load)
   const elapsedRef = useRef(0);
 
-  const eventDate = useMemo(() => new Date(siteConfig.wedding.date), [siteConfig.wedding.date]);
-  const dateLabel = Number.isNaN(eventDate.getTime())
-    ? siteConfig.wedding.date
-    : eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
   const name = fill(gala.title);
-  const { ceremony } = siteConfig;
-  const details = [
-    { key: 'date', label: 'Date', value: dateLabel, sub: ceremony.day },
-    {
-      key: 'time',
-      label: 'Time',
-      value: ceremony.time,
-      sub: ceremony.guestsTime ? `Call time ${ceremony.guestsTime}` : '',
-    },
-    { key: 'venue', label: 'Venue', value: ceremony.location, sub: ceremony.venue },
-  ].filter((d) => d.value);
+  const ghostText = (gala.ghostText ?? []).map((t) => fill(t)).filter(Boolean).join('  ·  ');
 
   useEffect(() => {
     document.documentElement.style.overflow = 'hidden';
@@ -191,21 +156,41 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
     }
   }, []);
 
+  // Real progress: the bar follows the clock (at least totalDurationMs) but can't pass
+  // what has actually loaded — fonts, the portrait and the page's own load event.
+  // Written straight to the DOM each frame so the poster doesn't re-render 60×/s.
   useEffect(() => {
-    if (statusMessages.length < 2) return;
-    const step = totalDurationMs / statusMessages.length;
-    const tick = () =>
-      setStatusIndex(
-        Math.min(Math.floor((performance.now() - (runStart ?? 0)) / step), statusMessages.length - 1),
+    let assetsDone = 0;
+    let cancelled = false;
+    const tasks: Promise<unknown>[] = [
+      document.fonts?.ready ?? Promise.resolve(),
+      document.readyState === 'complete'
+        ? Promise.resolve()
+        : new Promise((resolve) => window.addEventListener('load', resolve, { once: true })),
+    ];
+    if (gala.photo) {
+      tasks.push(
+        new Promise((resolve) => {
+          const img = new window.Image();
+          img.onload = img.onerror = resolve;
+          img.src = encodeURI(gala.photo);
+        }),
       );
-    tick();
-    const t = setInterval(tick, 250);
-    return () => clearInterval(t);
-  }, [statusMessages.length, totalDurationMs]);
+    }
+    tasks.forEach((task) =>
+      task.then(() => {
+        if (!cancelled) assetsDone += 1;
+      }),
+    );
 
-  useEffect(() => {
+    let shown = 0;
+    let lastPercent = -1;
+    let lastStatus = 0;
+    let frame = 0;
     let fadeTimer: ReturnType<typeof setTimeout> | undefined;
-    const t = setTimeout(() => {
+    let doneTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const finish = () => {
       setFadeOut(true);
       onFadeStartRef.current?.();
       const fadeMs = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 200 : FADE_OUT_MS;
@@ -213,12 +198,51 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
         runStart = null; // the next loading run (e.g. client navigation back) starts fresh
         onCompleteRef.current();
       }, fadeMs);
-    }, Math.max(0, totalDurationMs - elapsedRef.current));
+    };
+
+    const tick = () => {
+      const elapsed = performance.now() - (runStart ?? 0);
+      const t = Math.min(elapsed / totalDurationMs, 1);
+      // Uneven pace, like a real download: quick bursts and short stalls (still never backwards)
+      const timed = Math.min(t + 0.035 * Math.sin(t * Math.PI * 3), 1);
+      const loaded = assetsDone >= tasks.length || elapsed >= MAX_WAIT_MS;
+      // Until everything has arrived, hold short of the end (≈ 90%)
+      const cap = loaded ? 1 : 0.35 + 0.55 * (assetsDone / tasks.length);
+      const target = Math.min(timed, cap);
+      shown = Math.max(shown, shown + (target - shown) * 0.14);
+      if (target === 1 && 1 - shown < 0.004) shown = 1;
+
+      if (barRef.current) barRef.current.style.width = `${shown * 100}%`;
+      const percent = Math.round(shown * 100);
+      if (percent !== lastPercent) {
+        lastPercent = percent;
+        progressRef.current?.setAttribute('aria-valuenow', String(percent));
+      }
+      if (statusMessages.length > 1) {
+        const index = Math.min(Math.floor(shown * statusMessages.length), statusMessages.length - 1);
+        if (index !== lastStatus) {
+          lastStatus = index;
+          setStatusIndex(index);
+        }
+      }
+
+      if (shown >= 1) {
+        // Let "100%" register for a beat before the fade
+        doneTimer = setTimeout(finish, 350);
+        return;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+
     return () => {
-      clearTimeout(t);
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      clearTimeout(doneTimer);
       clearTimeout(fadeTimer);
     };
     // Runs once per mount — inputs are locked above
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalDurationMs]);
 
   return (
@@ -247,6 +271,13 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
         <div className="gala-bg__spot" />
         <div className="gala-bg__vignette" />
       </div>
+      {/* Ghost lettering drifting down the left edge and up the right */}
+      <GhostMarquee
+        text={ghostText}
+        className="gala-ghost"
+        fontClassName={theSeasons.className}
+        still={reduceMotion}
+      />
       {!reduceMotion && (
         <div className="gala-motes" aria-hidden="true">
           {MOTES.map((m, i) => (
@@ -270,36 +301,24 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
       <div className="gala">
         <header className="gala__head">
           {gala.eyebrow && (
-            <p className="gala__eyebrow gala-reveal" style={delay(T.eyebrow)}>
+            <p className="gala__eyebrow">
               {gala.eyebrow}
             </p>
           )}
-          <GoldRule className="gala-reveal gala-reveal--wide" style={delay(T.topRule)} />
-          <h1 className="gala__title" aria-label={`${name} ${gala.subtitle}`}>
-            <span className="gala__name" aria-hidden="true">
-              {Array.from(name).map((ch, i) => (
-                <span
-                  key={i}
-                  className="gala__name-letter gala-gold gala-letter"
-                  style={delay(T.nameStart + i * T.nameStagger)}
-                >
-                  {ch}
-                </span>
-              ))}
-            </span>
-            {gala.subtitle && (
-              <span className="gala__subtitle-wrap" aria-hidden="true">
-                <span className="gala__subtitle gala-script gala-gold gala-write" style={delay(T.subtitle)}>
-                  {gala.subtitle}
-                </span>
+          <GoldRule />
+          <h1 className="gala__title" aria-label={name}>
+            {/* Nickname in gold script, with a soft glow behind it */}
+            <span className="gala__name-wrap" aria-hidden="true">
+              <span className="gala__name gala-script gala-gold">
+                {name}
               </span>
-            )}
+            </span>
           </h1>
         </header>
 
         <div className="gala__stage">
           {gala.taglineLeft.length > 0 && (
-            <div className="gala__tagline gala__tagline--left gala-reveal gala-reveal--left" style={delay(T.taglines)}>
+            <div className="gala__tagline gala__tagline--left">
               <p>
                 {gala.taglineLeft.map((line) => (
                   <span key={line}>{line}</span>
@@ -309,7 +328,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
             </div>
           )}
           {gala.taglineRight.length > 0 && (
-            <div className="gala__tagline gala__tagline--right gala-reveal gala-reveal--right" style={delay(T.taglines + 150)}>
+            <div className="gala__tagline gala__tagline--right">
               <p>
                 {gala.taglineRight.map((line) => (
                   <span key={line}>{line}</span>
@@ -319,13 +338,13 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
             </div>
           )}
           {gala.photo && (
-            <div className="gala__photo gala-reveal gala-reveal--photo" style={delay(T.photo)}>
+            <div className="gala__photo">
               <Image
                 src={gala.photo}
                 alt={fill('{celebrant}')}
                 fill
                 priority
-                sizes="(max-width: 640px) 100vw, 620px"
+                sizes="(max-width: 559px) 135vw, 680px"
                 className="gala__photo-img"
               />
             </div>
@@ -334,7 +353,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
 
         <footer className="gala__foot">
           {gala.kicker && (
-            <p className="gala__kicker gala-reveal gala-reveal--track" style={delay(T.kicker)}>
+            <p className="gala__kicker">
               {gala.kicker}
             </p>
           )}
@@ -343,7 +362,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
             aria-label={`${gala.occasionNumber}${gala.occasionSuffix} ${gala.occasion}`}
           >
             {/* Each piece carries its own gold fill — background-clip text doesn't reach nested elements */}
-            <span className="gala__age gala-pop" style={delay(T.age)} aria-hidden="true">
+            <span className="gala__age" aria-hidden="true">
               <span className="gala__age-num gala-gold">{gala.occasionNumber}</span>
               {gala.occasionSuffix && (
                 <span className="gala__age-suffix">
@@ -351,45 +370,33 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
                 </span>
               )}
             </span>
-            {/* Script line is written on left → right, overlapping the age like the hero title */}
+            {/* Script line overlapping the age, like the hero title */}
             <span className="gala__occasion-script-wrap" aria-hidden="true">
-              <span
-                className="gala__occasion-script gala-script gala-gold gala-write"
-                style={delay(T.occasion)}
-              >
-                {gala.occasion}
-              </span>
+              <span className="gala__occasion-script gala-script gala-gold">{gala.occasion}</span>
             </span>
           </h2>
-          <GoldRule className="gala-reveal gala-reveal--wide" style={delay(T.bottomRule)} />
-
-          {details.length > 0 && (
-            <dl className="gala__details">
-              {details.map(({ key, label, value, sub }, i) => (
-                <div
-                  key={key}
-                  className={`gala__detail gala__detail--${key} gala-reveal`}
-                  style={delay(T.details + i * T.detailsStagger)}
-                >
-                  <dt>{label}</dt>
-                  <dd className="gala__detail-value">{value}</dd>
-                  {sub && <dd className="gala__detail-sub">{sub}</dd>}
-                </div>
-              ))}
-            </dl>
+          {/* Full name in engraved caps under "18th Birthday" */}
+          {gala.subtitle && (
+            <p className="gala__fullname">
+              <span className="gala-gold">{fill(gala.subtitle)}</span>
+            </p>
           )}
+          <GoldRule />
 
           <div
-            className="gala__progress gala-reveal"
-            style={delay(T.progress)}
+            ref={progressRef}
+            className="gala__progress"
             role="progressbar"
             aria-label="Loading invitation"
             aria-valuemin={0}
             aria-valuemax={100}
+            aria-valuenow={0}
           >
-            <div className="gala__progress-track">
-              {/* Fill timing runs from mount, independent of the reveal delay */}
-              <div className="gala__progress-bar" style={{ animationDuration: `${totalDurationMs}ms` }} />
+            <div className="gala__progress-frame">
+              <div className="gala__progress-track">
+                {/* Width driven by the progress loop above */}
+                <div ref={barRef} className="gala__progress-bar" />
+              </div>
             </div>
             {statusMessages.length > 0 && (
               <p key={statusIndex} className="gala__status">

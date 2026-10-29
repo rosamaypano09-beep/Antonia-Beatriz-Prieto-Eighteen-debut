@@ -2,12 +2,8 @@
 
 import Link from "next/link"
 import { useEffect } from "react"
-import { Cinzel } from "next/font/google"
+import { cinzel } from "@/lib/fonts"
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
 
 const IVORY = "#fffaf4"
 const GOLD = "var(--color-welcome-gold)"
