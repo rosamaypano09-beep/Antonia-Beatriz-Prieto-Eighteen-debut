@@ -256,7 +256,7 @@ const SITE_URL = "https://basha-debut-invitation.weddinginvitationrsvp.com/" // 
 // Image shown when the link is shared (Facebook, Messenger, Viber, X, …).
 // Messenger is strict: use a JPG exactly 1200×630, under ~300 KB. When you replace it,
 // change the file name (or bump ?v=) so Facebook fetches the new one instead of its cache.
-const LINK_PREVIEW_IMAGE = "/Details/LinkPreview.jpg?v=2"
+const LINK_PREVIEW_IMAGE = "/Details/linkPreview.png?v=2"
 const LINK_PREVIEW_IMAGE_SIZE = { width: 1200, height: 630, type: "image/jpeg" }
 
 // Site address with env override applied and no trailing slash — no need to edit
@@ -333,7 +333,7 @@ const SECTION_DECOS = {
 
 // Principal sponsors Google Apps Script — used by the main page and /inviteone
 // ⚠ check — every googleAPI URL below still points to the template's sheets.
-const SPONSORS_API = "https://script.google.com/macros/s/AKfycbzo96CZ3_PXZ9xm8_KLx5I_O14-2x44mVD6fpjKAmXuW76q8knjy7voB2KyXa42KbI2Vw/exec"
+const SPONSORS_API = "https://script.google.com/macros/s/AKfycbzYUCNcwFtjNEnOaKZKS733y2RlTJu2B2wsfIQd264aucylvWqdTarS_npSneDMPN3E/exec"
 
 export const siteConfig = {
   siteUrl: SITE_URL,
@@ -377,16 +377,16 @@ export const siteConfig = {
     backgroundMusic: BRAND.backgroundMusic,
   },
   googleAPI:{
-    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLScLB7r_-OfWdCFBxw2vblcCZGbzAMc8B7wkG9SljaOVp9XuYQ/formResponse", // ⚠ check
-    message: "https://script.google.com/macros/s/AKfycbzKnD53EvOpAu-MqB3z13bgYDryUTalkIglLzYQzSNunDsxKiroXrcn2Dz7dz5TWwvrKg/exec", // ⚠ check
-    guestList: "https://script.google.com/macros/s/AKfycbyki1HG1XVHCIkE9Q0nQcfdEq7DQyQmjBvSQyiTWcLi2Wce4uN6D1D6Z2HifjDwD3MUWA/exec", // ⚠ check
-    guestRequest: "https://script.google.com/macros/s/AKfycbyJ7uy-6GqUpSPmkGVNuFCjeiGzgenAknkVpxfCzg3-W3DsQ97GoOjAlqWgQPq3EOoKlw/exec", // ⚠ check
-    entourage: "https://script.google.com/macros/s/AKfycbxYLmro6-Gu9YF7BItT4OmXIE0RjGU4UedKREl4bIvQu24jsJ9K7SSSQGDx-CbNBiR4_Q/exec", // ⚠ check
+    messageForm: "https://docs.google.com/forms/d/e/1FAIpQLSdgZaRdbq48K29WnLbEYQ3NkNLhOtyL71xD0n0k2fSjm79H3A/formResponse", // ⚠ check
+    message: "https://script.google.com/macros/s/AKfycbwyBqOm8h0nHehsm8GicfyTyv14z-wEKEOtXitb6jHTkIEuhwWb9xmQ156GRa4cMSc/exec", // ⚠ check
+    guestList: "https://script.google.com/macros/s/AKfycbz5-5iDaJ8wY3imn1N0nQsntxob7_SXxZAAZSZcaR89QW-b1qe-vnuJls9TaifDrtgo/exec", // ⚠ check
+    guestRequest: "https://script.google.com/macros/s/AKfycbzQypryWOI3SAuj85o_v2GDmM31AAsYzaBSPEIM5a7LYHUb7D8fRk4xTjPbGcSlUJP7/exec", // ⚠ check
+    entourage: "https://script.google.com/macros/s/AKfycbwmRP5CV9OIXF9LgdZpTAj1ivYrTSGWH4gfSpW7Mi1c1e2JF58_jyYSSmARmNRLL0c/exec", // ⚠ check
     sponsors: SPONSORS_API,
     // Principal sponsors shown on /inviteone and /invitetwo (entourage section)
     sponsorsInviteOne: SPONSORS_API,
-    sponsorsInviteTwo: "https://script.google.com/macros/s/AKfycbzo96CZ3_PXZ9xm8_KLx5I_O14-2x44mVD6fpjKAmXuW76q8knjy7voB2KyXa42KbI2Vw/exec",
-    googleShare: "https://docs.google.com/spreadsheets/d/1XFuCKtVvN4qXNIevVbghCZd1Xb-Iiah0yXHH1OHqYug/edit?usp=sharing", // ⚠ check
+    sponsorsInviteTwo: "https://script.google.com/macros/s/AKfycbzYUCNcwFtjNEnOaKZKS733y2RlTJu2B2wsfIQd264aucylvWqdTarS_npSneDMPN3E/exec",
+    googleShare: "https://docs.google.com/spreadsheets/d/170P-W4QTKoT39w7qFQqvFtghDfDjbaCmKc807-_jY2A/edit?usp=sharing", // ⚠ check
     videoMessageForm:
       "https://docs.google.com/forms/d/e/1FAIpQLSfeGlEl4CMXWefdvCw6AOPHFS1ROku_rs-Gbofa2LkVJ0sLGQ/viewform",
   },
@@ -1572,7 +1572,7 @@ export const siteConfig = {
   snapShare: {
     // ⚠ check — Google Drive upload folder + its QR are still from the template
     googleDriveLink:
-      "https://drive.google.com/drive/folders/1UnYn0ZkNX92Q4HNE48JErNNZOhBU2U3B?usp=sharing",
+      "https://drive.google.com/drive/folders/1rEQ9rWDcrkZ9OCVfP9MUAtKS6QFuznCY?usp=sharing",
     albumQR: "/QR/AlbumQR.png",
     hashtag: HASHTAGS,
     instructions: "Please scan this QR code and upload the photos and videos you took during the debut. I'd love to see the night through your eyes!",
