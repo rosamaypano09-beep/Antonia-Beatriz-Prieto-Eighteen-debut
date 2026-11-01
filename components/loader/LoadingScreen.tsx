@@ -302,7 +302,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
         <header className="gala__head">
           {gala.eyebrow && (
             <p className="gala__eyebrow">
-              {gala.eyebrow}
+              <span className="gala-gold">{gala.eyebrow}</span>
             </p>
           )}
           <GoldRule />

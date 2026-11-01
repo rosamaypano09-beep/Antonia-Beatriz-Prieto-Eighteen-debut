@@ -436,14 +436,14 @@ export const siteConfig = {
     // Date / time / venue in the details row come from ceremony.
     gala: {
       photo: "/Details/debutant.png", // cut-out portrait (transparent background)
-      eyebrow: "You are cordially invited to the debut of",
+      eyebrow: "Chapter XVIII",
       cardEyebrow: "You're Invited", // top line on the paper card inside the envelope
       // Invitation line on the paper card, above the name ("" hides it)
       cardLine: "Her family joyfully invites you to celebrate the debut of",
       title: "{celebrant}", // nickname in gold script
       subtitle: CELEBRANT.fullName, // full name in caps beneath
-      taglineLeft: ["Eighteen years", "of love.", "One night", "to remember."],
-      taglineRight: ["Faith", "Family", "Friends", "Forever."],
+      taglineLeft: ["A celebration", "of youth, grace,", "and new", "beginnings"],
+      taglineRight: ["Among", "familiar hearts", "and cherished", "company"],
       kicker: "Celebrating her",
       // Ghost lettering that drifts down the left edge and up the right ([] hides it)
       ghostText: ["{celebrant}", CELEBRANT.fullName, "Eighteen"],
