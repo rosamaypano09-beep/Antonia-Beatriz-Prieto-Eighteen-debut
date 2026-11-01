@@ -313,24 +313,25 @@
   align-items: center;
 }
 
-.gala__kicker {
+.gala__eyebrow,
+.gala__kicker,
+.gala__tagline p {
   font-family: var(--font-cinzel), serif;
   text-transform: uppercase;
   color: var(--gala-ink);
 }
 
-/* "Chapter XVIII": Didone caps in gold, widely tracked like an engraved chapter heading */
+/* Two balanced lines on phones ("You are cordially invited / to the debut of") */
 .gala__eyebrow {
-  margin: clamp(0.35rem, 1.2dvh, 0.9rem) 0 clamp(0.15rem, 0.5dvh, 0.4rem);
-  margin-right: -0.5em; /* optically re-center tracked text */
-  font-family: var(--gala-font-display), serif;
-  font-size: clamp(0.85rem, min(3.6vw, 2.3dvh), 1.3rem);
-  font-weight: 600;
-  letter-spacing: 0.5em;
-  line-height: 1.4;
-  text-transform: uppercase;
-  white-space: nowrap;
-  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.6));
+  max-width: 21em;
+  margin: clamp(0.35rem, 1.2dvh, 0.9rem) 0 clamp(0.1rem, 0.4dvh, 0.3rem);
+  margin-right: -0.28em; /* optically re-center tracked text */
+  font-size: clamp(0.62rem, min(2.75vw, 1.7dvh), 0.9rem);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  line-height: 1.75;
+  text-wrap: balance;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
 
 /* Gold ornament: line · gem · line */
@@ -482,18 +483,14 @@
   max-width: 220px;
   white-space: nowrap;
 }
-/* Soft italic serif for the poetic lines either side of the portrait */
 .gala__tagline p {
   display: flex;
   flex-direction: column;
   margin: 0;
-  font-family: var(--gala-font-body), serif;
-  font-style: italic;
-  font-size: clamp(0.68rem, min(2.9vw, 1.95dvh), 1.2rem);
+  font-size: clamp(0.52rem, min(2.25vw, 1.55dvh), 0.95rem);
   font-weight: 500;
-  letter-spacing: 0.03em;
-  line-height: 1.35;
-  color: var(--gala-ink);
+  letter-spacing: 0.12em;
+  line-height: 1.5;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
 }
 .gala__tagline .gala-rule {
