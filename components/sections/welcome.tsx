@@ -4,7 +4,7 @@ import localFont from "next/font/local"
 import { motion } from "motion/react"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { fillCelebrant } from "@/lib/celebrant"
-import { sectionType, welcomeTitleSize } from "@/lib/section-typography"
+import { sectionType } from "@/lib/section-typography"
 import { cinzel } from "@/lib/fonts"
 
 
@@ -54,31 +54,63 @@ function OrnamentalDivider({ compact = false }: { compact?: boolean }) {
   )
 }
 
-function LayeredWelcomeTitle({ title, script }: { title: string; script: string }) {
+// Three-tier lockup: serif caps title → small-caps connector between gold rules →
+// large gold script. Each tier has its own line so the script never collides with the caps.
+function LayeredWelcomeTitle({
+  title,
+  connector,
+  script,
+}: {
+  title: string
+  connector?: string
+  script: string
+}) {
   return (
     <h2
-      className="welcome-title-lockup relative mx-auto w-full max-w-full text-center"
+      className="welcome-title-lockup relative mx-auto flex w-full max-w-full flex-col items-center text-center"
       style={
         {
-          "--welcome-size": welcomeTitleSize.main,
-          "--script-size": welcomeTitleSize.script,
-          "--script-overlap": welcomeTitleSize.overlap,
+          "--welcome-size": "clamp(2.1rem, min(11vw, 15cqi), 4.75rem)",
+          "--connector-size": "clamp(0.6rem, min(2.6vw, 3cqi), 0.95rem)",
+          "--script-size": "clamp(2.4rem, min(13vw, 17cqi), 5.25rem)",
         } as React.CSSProperties
       }
     >
       <span
-        className={`${theSeasons.className} block uppercase leading-[0.78] tracking-[0.08em] min-[400px]:tracking-[0.11em] sm:tracking-[0.13em] md:tracking-[0.14em]`}
+        className={`${theSeasons.className} block uppercase leading-none tracking-[0.14em] min-[400px]:tracking-[0.18em] sm:tracking-[0.22em]`}
         style={{
           fontSize: "var(--welcome-size)",
           color: WELCOME_COLORS.wine,
+          // tracking adds trailing space after the last letter — nudge back to true center
+          marginRight: "-0.18em",
         }}
       >
         {title}
       </span>
 
+      {connector ? (
+        <span className="mt-2.5 flex w-full items-center justify-center gap-2.5 sm:mt-3.5 sm:gap-3.5">
+          <span
+            aria-hidden
+            className="h-px w-8 min-[400px]:w-12 sm:w-16"
+            style={{ background: "linear-gradient(to right, transparent, var(--color-welcome-gold))" }}
+          />
+          <span
+            className={`${cinzel.className} font-semibold uppercase tracking-[0.32em] sm:tracking-[0.4em]`}
+            style={{ fontSize: "var(--connector-size)", color: WELCOME_COLORS.gold, marginRight: "-0.32em" }}
+          >
+            {connector}
+          </span>
+          <span
+            aria-hidden
+            className="h-px w-8 min-[400px]:w-12 sm:w-16"
+            style={{ background: "linear-gradient(to left, transparent, var(--color-welcome-gold))" }}
+          />
+        </span>
+      ) : null}
+
       <span
-        aria-hidden
-        className={`${aboveTheBeyond.className} relative z-10 mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9]`}
+        className={`${aboveTheBeyond.className} relative z-10 mx-auto -mt-1 block w-fit max-w-full px-2 leading-[1.1] sm:-mt-0.5`}
         style={{
           fontSize: "var(--script-size)",
           color: WELCOME_COLORS.gold,
@@ -86,8 +118,6 @@ function LayeredWelcomeTitle({ title, script }: { title: string; script: string 
       >
         {script}
       </span>
-
-      <span className="sr-only"> {script}</span>
     </h2>
   )
 }
@@ -134,7 +164,7 @@ export function Welcome() {
 
           <div className="relative flex flex-col gap-8 sm:gap-9 md:gap-10">
             <header className="space-y-3 pt-2 text-center sm:space-y-3.5 sm:pt-3 md:space-y-4 md:pt-4">
-              <LayeredWelcomeTitle title={content.title} script={content.script} />
+              <LayeredWelcomeTitle title={content.title} connector={content.connector} script={content.script} />
               <OrnamentalDivider compact />
             </header>
 

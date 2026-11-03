@@ -182,13 +182,13 @@ const HASHTAGS = [
 //     highlight: phrase inside details shown bold + underlined ("" for none)
 // Dress code: the evening's colors — burgundy, red, black, and gold (DRESS_PALETTE)
 
-// Dress code colors, sampled from public/Details/attire.png — the attire card shows
-// them with names, the Dress Code reminder shows the same strip without names
+// Dress code: Black Formal — four shades of black. The attire card shows them
+// with names, the Dress Code reminder shows the same strip without names
 const DRESS_PALETTE: AttireColor[] = [
-  { name: "Burgundy", hex: "#6A1420" }, // the suits
-  { name: "Red", hex: "#961B22" }, // the gowns + roses
-  { name: "Black", hex: "#2B2526" }, // shirts, ties, shoes (warm black)
-  { name: "Gold", hex: "#C6A15B" }, // accents
+  { name: "Jet", hex: "#0A0A0A" },
+  { name: "Onyx", hex: "#1C1C1E" },
+  { name: "Charcoal", hex: "#2E2D30" },
+  { name: "Graphite", hex: "#46454A" },
 ]
 
 const ATTIRE = {
@@ -232,15 +232,15 @@ const ATTIRE = {
 
   guests: {
     title: "", // no heading — this dress code is for everyone
-    image: "/Details/attire.png",
+    image: "/Details/attireGuide.png",
     palette: DRESS_PALETTE,
     // One inclusive blurb (no Ladies / Gentlemen headings); \n starts a new line
     ladies: {
       label: "",
       details:
-        "Come in your most elegant best — formal or semi-formal, whatever makes you feel wonderful.\n\n" +
-        "Please dress in the colors of the evening: burgundy, red, black, or gold.",
-      highlight: "burgundy, red, black, or gold",
+        "Come in your most elegant best — sophisticated formal wear with timeless, modest styling.\n\n" +
+        "Please dress in black formal attire.",
+      highlight: "black formal attire",
     },
     gentlemen: {
       label: "",
@@ -415,12 +415,16 @@ export const siteConfig = {
   },
   // Welcome letter (components/sections/welcome.tsx)
   welcome: {
-    title: "Welcome",
-    script: "to my eighteenth",
+    // Header lockup: title (serif caps) → connector (small caps between gold rules) → script
+    title: "A Night",
+    connector: "in honor of", // "" hides this line
+    script: "Eighteen",
     paragraphs: [
-      "Dear family and friends — eighteen years ago, my story began in your arms. Now I am stepping into a brand-new chapter, and there is no one I would rather have beside me than you.",
-      "Inside this invitation you will find everything for the evening: the program, the venue, the dress code, and a few gentle reminders. Come in your elegant best — in burgundy, red, black, or gold — and bring your warmest smile for a night of roses, candlelight, and music.",
-      "Thank you for every lesson, every laugh, and every prayer that carried me here. Sharing this night with the people who shaped me is the most beautiful gift I could ask for.",
+      "Eighteen years of growing, learning, and becoming. Looking back, I see a story filled with little moments, lessons, answered prayers, and blessings I could never fully put into words.",
+      "I am grateful for the family who has been my foundation and, above all, for God's grace that has guided me through every season.",
+      "As I step into this new chapter, I carry with me everything that has shaped me, with faith for all that is yet to come.",
+      "And now, as this milestone calls for a little celebration, I've put together the details to help you prepare for the evening. From the program and venue to the dress code and a few gentle reminders, everything you'll need to know is laid out in the pages ahead.",
+      "May this evening become another beautiful memory in a life already filled with so much to be grateful for. Thank you for being part of something so meaningful. Your presence would make this occasion all the more special.",
     ],
     signOff: "With all my love and gratitude,",
     signature: "{celebrant}",
@@ -617,11 +621,12 @@ export const siteConfig = {
     },
     attire: {
       title: "Attire Guidelines",
-      description: "Formal and elegant — come dressed for a night to remember.",
+      description: "The evening awaits. Kindly opt for sophisticated formal wear with timeless and modest styling.",
       paletteTitle: "Dress Code Palette",
-      paletteSubtitle: "Burgundy · Red · Black · Gold",
-      colorGuideTitle: "The Evening's Colors",
-      colorGuideNote: "Choose any one, or pair them together — deep burgundy, rich reds, classic black, and a touch of gold.",
+      paletteSubtitle: "Black",
+      colorGuideTitle: "Dress Code: Black Formal",
+      colorGuideNote:
+        "Kindly come dressed in black formal wear. Think classic silhouettes, refined details, and tasteful styling. Please avoid overly casual or revealing outfits.",
       // Order and visibility come from ATTIRE.show (skips blanks, typos and repeats)
       groups: ATTIRE.show
         .filter((id, i, list) => ["sponsors", "entourage", "guests"].includes(id) && list.indexOf(id) === i)
@@ -640,8 +645,7 @@ export const siteConfig = {
           variant: "accent" as "accent" | "soft",
           showPalette: true, // color strip after the first paragraph
           paragraphs: [
-            "Come in your most elegant best — formal or semi-formal, whatever makes you feel wonderful.",
-            "Please dress in the colors of the evening: burgundy, red, black, or gold.",
+            "Kindly keep it elegant, tasteful, and modest.",
           ],
         },
         {
@@ -657,7 +661,7 @@ export const siteConfig = {
           variant: "accent" as "accent" | "soft",
           showPalette: false,
           paragraphs: [
-            "Photos are welcome! Please give way to the official photographers during the entrance, the 18 Roses and the candle blowing so every moment is captured beautifully.",
+            "Feel free to take photos and videos throughout the evening! We kindly ask that you allow our official photographers to take the lead during the entrance, 18 Roses, and 18 Candles ceremony so every special moment can be captured beautifully.",
           ],
         },
         {
@@ -665,7 +669,7 @@ export const siteConfig = {
           variant: "soft" as "accent" | "soft",
           showPalette: false,
           paragraphs: [
-            "Stay for the after party from 8:30 PM — dance, laugh, and celebrate with me until the very last song.",
+            "As the evening's festivities come to a close, the night is far from over. Stay beyond 8:30 PM and keep the celebration going. See you after hours!",
           ],
         },
       ],
