@@ -107,14 +107,19 @@ const TIMES = {
 
 // ── Venue ───────────────────────────────────────────────────────────────────
 const VENUE = {
-  name: "Venue To Follow", // ⚠ check — replace once the family confirms the venue
-  address: "Location details to follow",
-  map: "", // Google Maps pin (directions button + QR); "" hides the map QR and buttons
+  name: "Base Function Hall", // ⚠ check — replace once the family confirms the venue
+  address: "5th Floor, Base Building, Lacson St, Bacolod, Negros Occidental",
+  map: "https://maps.app.goo.gl/biRcxWoTHzBpAMTw8", // Google Maps pin (directions button + QR); "" hides the map QR and buttons
   // Step-by-step directions (FAQ) — add once the venue is confirmed
   directions: [] as string[],
   landmarks: [] as string[],
   // Add confirmed venue photos when available ([] shows the gold monogram panel)
-  photos: [] as string[],
+  // Venue card slideshow (Event Details) — files in public/Details
+  photos: [
+    "/Details/venue (6).jpg",
+    "/Details/venue (7).jpg",
+    "/Details/venue (8).jpg",
+  ] as string[],
 }
 const CEREMONY_VENUE = VENUE
 const RECEPTION_VENUE = VENUE
@@ -665,8 +670,16 @@ export const siteConfig = {
           ],
         },
         {
-          title: "After Party",
+          title: "For My 18 Candles",
           variant: "soft" as "accent" | "soft",
+          showPalette: false,
+          paragraphs: [
+            "To my 18 Candles, instead of a spoken message, may I kindly ask you to bring a handwritten letter? Your words will become keepsakes I can hold onto, reread, and treasure for many years to come.",
+          ],
+        },
+        {
+          title: "After Party",
+          variant: "accent" as "accent" | "soft",
           showPalette: false,
           paragraphs: [
             "As the evening's festivities come to a close, the night is far from over. Stay beyond 8:30 PM and keep the celebration going. See you after hours!",
@@ -1079,6 +1092,11 @@ export const siteConfig = {
         question: "May I take photos and videos?",
         answer:
           "Of course! We'd love to see the night through your eyes — share them using the hashtags in [Snap & Share](#snap-share).\n\nDuring the grand entrance, the 18 Roses, and the candle blowing, kindly give way to the official photographers.",
+      },
+      {
+        question: "I'm one of the 18 Candles. What should I prepare?",
+        answer:
+          "Instead of a spoken message, {celebrant} would love to receive a handwritten letter from each of her 18 Candles.\n\nWrite from the heart — a memory you share, a wish for her future, or simply what she means to you. These letters will be kept and treasured as keepsakes she can look back on for years to come.",
       },
       {
         question: "How long is the celebration?",

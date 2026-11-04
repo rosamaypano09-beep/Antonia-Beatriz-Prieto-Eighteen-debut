@@ -94,6 +94,10 @@ const cardStyle = {
     "0 30px 60px -28px color-mix(in srgb, var(--color-coastal-deep) 80%, transparent), inset 0 1px 0 rgb(255 255 255 / 80%)",
 } as const
 
+// Message wall is hidden: guests can still send messages (they go to the Google Form),
+// but the sent messages are not fetched or shown on the page. Set to true to show them again.
+const SHOW_MESSAGE_WALL = false
+
 interface Message {
   timestamp: string
   name: string
@@ -427,10 +431,11 @@ export function Messages() {
     })
     setFreshKey(messageKey(message))
     window.setTimeout(() => setFreshKey(null), 1200)
-    window.setTimeout(() => fetchMessages(true), 2200)
+    if (SHOW_MESSAGE_WALL) window.setTimeout(() => fetchMessages(true), 2200)
   }, [fetchMessages])
 
   useEffect(() => {
+    if (!SHOW_MESSAGE_WALL) return
     fetchMessages()
   }, [fetchMessages])
 
@@ -469,8 +474,9 @@ export function Messages() {
           </div>
         </div>
 
-     
-         <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
+        {/* Message wall (hidden — see SHOW_MESSAGE_WALL) */}
+        {SHOW_MESSAGE_WALL && (
+        <div className="relative mx-auto max-w-4xl pb-2 sm:pb-3">
           <SilkTextGlow className="mb-4 text-center sm:mb-6 md:mb-8">
             <h3
               className={`${theSeasons.className} mb-1.5 font-semibold tracking-[0.08em] uppercase sm:mb-2 ${sectionType.subheader}`}
@@ -494,7 +500,8 @@ export function Messages() {
             loading={loading && messages.length === 0}
             freshKey={freshKey}
           />
-        </div>  
+        </div>
+        )}
       </div>
     </section>
     </div>
