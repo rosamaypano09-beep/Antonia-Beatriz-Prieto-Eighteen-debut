@@ -295,12 +295,37 @@ const BRAND = {
 // Celebrant photos used in "photos" mode (loader, envelope, hero, reminders,
 // snap & share, closing) — Bea's debut shoot in /public/mobile-background.
 // The /gallery page reads every file in /public/mobile-background and /public/desktop-background.
-const CELEBRANT_PHOTOS = Array.from(
-  { length: 4 }, // ⚠ check — raise this as more of Bea's photos are added
-  (_, i) => `/mobile-background/debut (${i + 1}).jpg`,
-)
-// Favorites picked for specific spots (index = file number − 1)
-const PHOTO = (n: number) => CELEBRANT_PHOTOS[n - 1]
+// Every photo file by its number (add new ones here as Bea's photos come in).
+const PHOTO_FILES: Record<number, string> = {
+  1: "debut (1).jpg",
+  2: "debut (2).jpg",
+  3: "debut (3).jpg",
+  4: "debut (4).jpg",
+  5: "debut (5).png",
+  6: "debut (6).png",
+  7: "debut (7).png",
+  8: "debut (8).png",
+  9: "debut (9).png",
+  10: "debut (10).png",
+  11: "debut (11).png",
+  12: "debut (12).png",
+  13: "debut (13).png",
+  14: "debut (14).png",
+  15: "debut (15).png",
+  16: "debut (16).png",
+}
+// Photo numbers that should never be shown anywhere (also hidden on /gallery —
+// keep in sync with HIDDEN_GALLERY_FILES in lib/fetch-gallery-images.ts).
+export const HIDDEN_PHOTOS = [4]
+// Favorites picked for specific spots: PHOTO(n) = public/mobile-background/debut (n)
+const PHOTO = (n: number) =>
+  PHOTO_FILES[n] && !HIDDEN_PHOTOS.includes(n)
+    ? `/mobile-background/${PHOTO_FILES[n]}`
+    : undefined!
+const CELEBRANT_PHOTOS = Object.keys(PHOTO_FILES)
+  .map(Number)
+  .filter((n) => !HIDDEN_PHOTOS.includes(n))
+  .map(PHOTO)
 
 // ── Decorations ─────────────────────────────────────────────────────────────
 // The botanical PNGs are tinted antique gold by --deco-filter in app/globals.css.
@@ -537,7 +562,7 @@ export const siteConfig = {
       timelineTop: DECOR.headerOrnament,
       sectionBottom: DECOR.footerVine,
     },
-    // Four chapters, one per photo (PHOTO(n) = public/mobile-background/debut (n).jpg).
+    // Four chapters, one per photo (PHOTO(n) = public/mobile-background/debut (n)).
     // Keep each to one or two short paragraphs so the cards stay light on phones.
     chapters: [
       {
@@ -545,7 +570,7 @@ export const siteConfig = {
         title: "Where It All Began",
         theme: "light" as const,
         layout: "image-left" as const,
-        image: PHOTO(1),
+        image: PHOTO(5),
         paragraphs: [
           "Eighteen years ago, a little girl arrived and was named Antonia Beatriz — though to everyone who loves her, she has always simply been Bea.",
           "Every story worth telling begins with love, and mine began in the arms of the family who has carried me ever since.",
@@ -556,7 +581,7 @@ export const siteConfig = {
         title: "Growing Up, Little by Little",
         theme: "dark" as const,
         layout: "image-right" as const,
-        image: PHOTO(2),
+        image: PHOTO(6),
         paragraphs: [
           "First steps and first days of school, scraped knees and late-night homework, big questions and even bigger dreams.",
           "Through every stage, you taught me to be kind, to keep going, and to laugh at the little things along the way.",
@@ -567,7 +592,7 @@ export const siteConfig = {
         title: "The People Who Shaped Me",
         theme: "light" as const,
         layout: "image-left" as const,
-        image: PHOTO(3),
+        image: PHOTO(8),
         paragraphs: [
           "To my family, thank you for the quiet sacrifices and the love that never ran out. To my friends, thank you for turning ordinary days into my favorite memories.",
           "And to God, who has been faithful in every season — every prayer whispered for me has brought me here.",
@@ -578,7 +603,7 @@ export const siteConfig = {
         title: "A New Chapter Begins",
         theme: "dark" as const,
         layout: "image-right" as const,
-        image: PHOTO(4),
+        image: PHOTO(9),
         paragraphs: [
           "Now I step into eighteen with a grateful heart, and there is no one I would rather celebrate with than you.",
           "Come raise a toast, share a dance, and help me begin this new chapter surrounded by love.",
@@ -642,7 +667,7 @@ export const siteConfig = {
       title: "Gentle Reminders",
       description: "A few thoughtful notes so everyone can enjoy the night.",
       // Shown as 9:16 portrait cards; the 1st sits in front, the rest fan out behind it
-      images: [PHOTO(1), PHOTO(2), PHOTO(3), PHOTO(4)],
+      images: [PHOTO(1), PHOTO(2), PHOTO(3), PHOTO(5)],
       // showPalette: shows the dress code palette after the first paragraph
       items: [
         {
@@ -1506,9 +1531,9 @@ export const siteConfig = {
     // Photos mode — full-screen background that slowly crossfades between the photos.
     // Phones (portrait) use "mobile", tablets / desktops (landscape) use "desktop".
     photos: {
-      mobile: [PHOTO(3), PHOTO(4), PHOTO(1), PHOTO(2)],
+      mobile: [16, 15, 14, 13, 11, 10, 9, 8, 7, 6, 5].map(PHOTO),
       // Same portraits on wide screens (cropped to fill, framed on her face)
-      desktop: [PHOTO(3), PHOTO(4), PHOTO(1), PHOTO(2)],
+      desktop: [16, 15, 14, 13, 11, 10, 9, 8, 7, 6, 5].map(PHOTO),
     },
     photoAlt: "{celebrant}",
     // Plain mode
@@ -1608,7 +1633,7 @@ export const siteConfig = {
       title: "Favorite Moments",
       caption: "Share your snapshots to be featured in the keepsake gallery.",
       // 3 photos: two side by side on top (3:4 frames), one wider frame below (4:3, framed on the face)
-      images: [PHOTO(4), PHOTO(1), PHOTO(2)],
+      images: [PHOTO(6), PHOTO(1), PHOTO(2)],
     },
     website: {
       show: true,

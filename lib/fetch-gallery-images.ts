@@ -3,6 +3,9 @@ import path from "path"
 
 const IMAGE_EXTENSIONS = new Set([".webp", ".jpg", ".jpeg", ".png", ".gif"])
 
+/** Files never shown in the gallery (keep in sync with HIDDEN_PHOTOS in content/site.ts). */
+const HIDDEN_GALLERY_FILES = new Set(["mobile-background/debut (4).jpg"])
+
 /** Encode each path segment so spaces/parentheses work in production URLs. */
 export function encodePublicImagePath(src: string): string {
   return (
@@ -110,6 +113,7 @@ function readImagesFromPublicDir(relativeDir: string): GalleryImageFile[] {
   return fs
     .readdirSync(dir)
     .filter((file) => IMAGE_EXTENSIONS.has(path.extname(file).toLowerCase()))
+    .filter((file) => !HIDDEN_GALLERY_FILES.has(`${relativeDir}/${file}`))
     .sort(naturalSort)
     .map((file) => {
       const size = readImageSize(path.join(dir, file))

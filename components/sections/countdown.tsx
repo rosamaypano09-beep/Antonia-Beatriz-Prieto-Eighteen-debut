@@ -7,7 +7,6 @@ import { cinzel } from "@/lib/fonts"
 import localFont from "next/font/local"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import Counter from "@/components/Counter"
-import Image from "next/image"
 import { parseWeddingDate } from "@/lib/wedding-date"
 import { celebrantName } from "@/lib/celebrant"
 
@@ -41,6 +40,7 @@ const light = {
   title: "var(--color-motif-soft)",
   script: "var(--color-motif-cream)",
   label: "var(--color-motif-silver)",
+  gold: "var(--color-welcome-gold)",
 } as const
 
 const outsideDividerLineStyle = {
@@ -88,7 +88,7 @@ function CountdownTitle({ title, script }: { title: string; script: string }) {
         className={`${aboveTheBeyond.className} mx-auto block w-fit max-w-full px-1 leading-[0.88] sm:leading-[0.9] mt-2 sm:mt-2.5 md:mt-3`}
         style={{
           fontSize: "var(--script-size)",
-          color: light.script,
+          color: light.gold,
         }}
       >
         {script}
@@ -253,15 +253,27 @@ export function Countdown() {
           className="relative"
         >
           <div className="relative w-72 h-72 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[40rem] xl:h-[40rem]">
-            {/* Monogram shown in white: brightness-0 flattens the artwork, invert turns it white */}
-            <Image
-              src={siteConfig.couple.monogram}
-              alt={`${celebrant} monogram`}
-              fill
-              sizes="(max-width: 640px) 18rem, (max-width: 768px) 24rem, (max-width: 1024px) 28rem, 40rem"
-              className="object-contain brightness-0 invert drop-shadow-[0_6px_18px_color-mix(in_srgb,var(--color-coastal-deep)_45%,transparent)]"
-              priority={false}
-            />
+            {/* Monogram shown in gold: the artwork is used as a mask over a solid gold fill */}
+            <div
+              role="img"
+              aria-label={`${celebrant} monogram`}
+              className="absolute inset-0 drop-shadow-[0_6px_18px_color-mix(in_srgb,var(--color-coastal-deep)_45%,transparent)]"
+            >
+              <div
+                className="h-full w-full"
+                style={{
+                  backgroundColor: light.gold,
+                  WebkitMaskImage: `url("${encodeURI(siteConfig.couple.monogram)}")`,
+                  maskImage: `url("${encodeURI(siteConfig.couple.monogram)}")`,
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                }}
+              />
+            </div>
           </div>
         </motion.div>
       </div>
@@ -324,6 +336,7 @@ export function Countdown() {
                     {/* Day number */}
                     <div className="relative flex items-center justify-center px-3 sm:px-4 md:px-5">
                       <span
+                        style={{ color: light.gold }}
                         className={`${cinzel.className} relative text-[3rem] font-bold leading-none tracking-wider sm:text-[4.5rem] md:text-[5.5rem] lg:text-[6rem]`}
                       >
                         {ceremonyDayNumber}
