@@ -570,7 +570,7 @@ export const siteConfig = {
         title: "Where It All Began",
         theme: "light" as const,
         layout: "image-left" as const,
-        image: PHOTO(5),
+        image: PHOTO(6),
         paragraphs: [
           "Eighteen years ago, a little girl arrived and was named Antonia Beatriz — though to everyone who loves her, she has always simply been Bea.",
           "Every story worth telling begins with love, and mine began in the arms of the family who has carried me ever since.",
@@ -581,7 +581,7 @@ export const siteConfig = {
         title: "Growing Up, Little by Little",
         theme: "dark" as const,
         layout: "image-right" as const,
-        image: PHOTO(6),
+        image: PHOTO(5),
         paragraphs: [
           "First steps and first days of school, scraped knees and late-night homework, big questions and even bigger dreams.",
           "Through every stage, you taught me to be kind, to keep going, and to laugh at the little things along the way.",
@@ -592,7 +592,7 @@ export const siteConfig = {
         title: "The People Who Shaped Me",
         theme: "light" as const,
         layout: "image-left" as const,
-        image: PHOTO(8),
+        image: "/mobile-background/debut (14).png",
         paragraphs: [
           "To my family, thank you for the quiet sacrifices and the love that never ran out. To my friends, thank you for turning ordinary days into my favorite memories.",
           "And to God, who has been faithful in every season — every prayer whispered for me has brought me here.",
@@ -603,7 +603,7 @@ export const siteConfig = {
         title: "A New Chapter Begins",
         theme: "dark" as const,
         layout: "image-right" as const,
-        image: PHOTO(9),
+        image: "/mobile-background/debut (8).png",
         paragraphs: [
           "Now I step into eighteen with a grateful heart, and there is no one I would rather celebrate with than you.",
           "Come raise a toast, share a dance, and help me begin this new chapter surrounded by love.",
