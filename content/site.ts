@@ -316,7 +316,7 @@ const PHOTO_FILES: Record<number, string> = {
 }
 // Photo numbers that should never be shown anywhere (also hidden on /gallery —
 // keep in sync with HIDDEN_GALLERY_FILES in lib/fetch-gallery-images.ts).
-export const HIDDEN_PHOTOS = [4]
+export const HIDDEN_PHOTOS = [4, 7]
 // Favorites picked for specific spots: PHOTO(n) = public/mobile-background/debut (n)
 const PHOTO = (n: number) =>
   PHOTO_FILES[n] && !HIDDEN_PHOTOS.includes(n)
@@ -567,47 +567,42 @@ export const siteConfig = {
     chapters: [
       {
         // 1 — the beginning
-        title: "Where It All Began",
+        title: "Beginnings",
         theme: "light" as const,
         layout: "image-left" as const,
         image: PHOTO(6),
         paragraphs: [
-          "Eighteen years ago, a little girl arrived and was named Antonia Beatriz — though to everyone who loves her, she has always simply been Bea.",
-          "Every story worth telling begins with love, and mine began in the arms of the family who has carried me ever since.",
+          "Eighteen years hold more memories than I could ever put into words. Yet before the milestones, the changes, and everything that came with growing up, there was a childhood rooted in Victorias—a place that holds some of my earliest and fondest memories. Much of who I am today was shaped by the people who cared for me, looked after me, and made even the simplest moments feel like home. Those were the days when happiness came easily, time seemed to move a little slower, and all I really had to do was enjoy being a child.",
         ],
       },
       {
         // 2 — growing up
-        title: "Growing Up, Little by Little",
+        title: "Beyond the Beginning",
         theme: "dark" as const,
         layout: "image-right" as const,
         image: PHOTO(5),
         paragraphs: [
-          "First steps and first days of school, scraped knees and late-night homework, big questions and even bigger dreams.",
-          "Through every stage, you taught me to be kind, to keep going, and to laugh at the little things along the way.",
+          "As I grew older, my world slowly became bigger. I was usually more of a listener than a talker, comfortable observing and taking things as they came. My school years were filled with everyday moments, childhood friendships, shared laughter, and little experiences that became memories of their own. I was content with keeping things simple and finding my place in the world at my own pace. Looking back, those ordinary days were part of what made growing up special.",
         ],
       },
       {
         // 3 — the people
-        title: "The People Who Shaped Me",
+        title: "In Time",
         theme: "light" as const,
         layout: "image-left" as const,
         image: "/mobile-background/debut (14).png",
         paragraphs: [
-          "To my family, thank you for the quiet sacrifices and the love that never ran out. To my friends, thank you for turning ordinary days into my favorite memories.",
-          "And to God, who has been faithful in every season — every prayer whispered for me has brought me here.",
+          "As the years passed, life slowly brought new changes and a different rhythm to the way I grew up. I found myself sharing more moments with the people closest to me, learning to appreciate the little things that once felt unfamiliar. Some relationships grew stronger with time, and what used to be occasional moments gradually became part of everyday life. In their own quiet way, these changes became some of the most meaningful parts of growing up.",
         ],
       },
       {
         // 4 — tonight
-        title: "A New Chapter Begins",
+        title: "With Time and Grace",
         theme: "dark" as const,
         layout: "image-right" as const,
         image: "/mobile-background/debut (8).png",
         paragraphs: [
-          "Now I step into eighteen with a grateful heart, and there is no one I would rather celebrate with than you.",
-          "Come raise a toast, share a dance, and help me begin this new chapter surrounded by love.",
-          "With all my love, {celebrant}",
+          "Looking back, I realize that the person I am today has been shaped by everything life has brought my way. Much of it comes from my mom, whose efforts and sacrifices have given me more than I could ever put into words. Through the good, the difficult, and even the moments I felt misunderstood, I learned something about myself along the way. I may not have everything figured out, but as I welcome eighteen, I look forward to new experiences, fresh beginnings, and all that is yet to come.",
         ],
       },
     ],
@@ -873,6 +868,7 @@ export const siteConfig = {
       "One of My 18 Candles",
       "18 Treasures",
       "One of My 18 Treasures",
+      "18 Shots",
       "18 Cheers",
       "One of My 18 Cheers",
       "18 Monetary Gifts",
@@ -887,6 +883,7 @@ export const siteConfig = {
       "18 Roses": "18 Roses",
       "18 Candles": "18 Candles",
       "18 Treasures": "18 Treasure Gifts",
+      "18 Shots": "18 Shots",
       "18 Cheers": "18 Cheers",
       "18 Monetary Gifts": "18 Monetary Gifts",
       // Category names as written in the entourage sheet
@@ -1531,9 +1528,9 @@ export const siteConfig = {
     // Photos mode — full-screen background that slowly crossfades between the photos.
     // Phones (portrait) use "mobile", tablets / desktops (landscape) use "desktop".
     photos: {
-      mobile: [16, 15, 14, 13, 11, 10, 9, 8, 7, 6, 5].map(PHOTO),
+      mobile: [16, 15, 14, 13, 12, 11, 10, 9, 8, 6, 5].map(PHOTO),
       // Same portraits on wide screens (cropped to fill, framed on her face)
-      desktop: [16, 15, 14, 13, 11, 10, 9, 8, 7, 6, 5].map(PHOTO),
+      desktop: [16, 15, 14, 13, 12, 11, 10, 9, 8, 6, 5].map(PHOTO),
     },
     photoAlt: "{celebrant}",
     // Plain mode

@@ -1530,6 +1530,55 @@ export function Entourage({ sponsorsList }: { sponsorsList?: SponsorsList } = {}
                   )
                 }
 
+                // 18 Shots: one column — each name with the question they'll answer below it
+                if (/^(one of my )?18 shots$/i.test(category)) {
+                  return (
+                    <div key={category}>
+                      {categoryIndex > 0 && (
+                        <div className="flex justify-center py-2 sm:py-2.5 md:py-3 mb-2 sm:mb-2.5 md:mb-3">
+                          <div className="w-full max-w-md h-px" style={dividerLineStyle} />
+                        </div>
+                      )}
+                      <div className="mb-2 sm:mb-2.5 md:mb-3">
+                        <SectionTitle>{displayRoleCategory(category)}</SectionTitle>
+                        <ol className="mx-auto flex w-full max-w-sm flex-col items-center gap-3.5 px-2 sm:max-w-md sm:gap-4">
+                          {members.map((member, idx) => {
+                            const question = member.roleTitle?.trim() ?? ""
+                            return (
+                              <li
+                                key={`${category}-${idx}-${member.name}`}
+                                className="flex w-full flex-col items-center text-center"
+                              >
+                                <p
+                                  className={`${theSeasons.className} max-w-full break-words`}
+                                  style={{ ...nameStyle, fontSize: "clamp(0.85rem, min(3.4vw, 6cqi), 1.1rem)", color: NAVY }}
+                                >
+                                  <MixedFontText
+                                    text={toDisplayName(member.name)}
+                                    specialClassName="font-goudy-italic tracking-normal"
+                                  />
+                                </p>
+                                {question && (
+                                  <p
+                                    className="font-goudy-italic mt-0.5 max-w-[22rem] break-words italic"
+                                    style={{
+                                      fontSize: "clamp(0.72rem, min(2.9vw, 5cqi), 0.9rem)",
+                                      lineHeight: 1.35,
+                                      color: SCRIPT,
+                                    }}
+                                  >
+                                    {question}
+                                  </p>
+                                )}
+                              </li>
+                            )
+                          })}
+                        </ol>
+                      </div>
+                    </div>
+                  )
+                }
+
                 // Default: single title, centered content
                 return (
                   <div key={category}>
