@@ -36,6 +36,7 @@ export async function fetchUntilReady<T>({
   maxDelayMs = 2000,
   maxAttempts = Number.POSITIVE_INFINITY,
   onRetry,
+  acceptLastValue = false,
 }: {
   load: (signal: AbortSignal) => Promise<T>
   isReady: (value: T) => boolean
@@ -44,10 +45,14 @@ export async function fetchUntilReady<T>({
   maxDelayMs?: number
   maxAttempts?: number
   onRetry?: (attempt: number) => void
+  /** When retries run out, return the last successfully loaded value (e.g. an empty list) instead of throwing */
+  acceptLastValue?: boolean
 }): Promise<T> {
   let delay = initialDelayMs
   let attempt = 0
   let lastError: unknown
+  let hasLastValue = false
+  let lastValue: T | undefined
 
   while (true) {
     if (signal?.aborted) {
@@ -57,6 +62,9 @@ export async function fetchUntilReady<T>({
     try {
       const value = await load(signal ?? new AbortController().signal)
       if (isReady(value)) return value
+      hasLastValue = true
+      lastValue = value
+      lastError = undefined
     } catch (error) {
       if (isAbortError(error)) throw error
       lastError = error
@@ -64,6 +72,7 @@ export async function fetchUntilReady<T>({
 
     attempt += 1
     if (attempt >= maxAttempts) {
+      if (acceptLastValue && hasLastValue && lastError === undefined) return lastValue as T
       throw lastError instanceof Error ? lastError : new Error("Data is not ready")
     }
     onRetry?.(attempt)

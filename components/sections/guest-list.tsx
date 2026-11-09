@@ -314,6 +314,7 @@ export function GuestList() {
         signal: controller.signal,
         load: (signal) => loadGuestsFromApi(signal, reload),
         isReady: (list) => list.length > 0,
+        acceptLastValue: true, // an empty sheet is a valid (empty) guest list, not an error
         maxAttempts: 4,
         maxDelayMs: 3000,
       })
