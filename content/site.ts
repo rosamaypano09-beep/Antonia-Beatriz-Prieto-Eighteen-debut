@@ -294,7 +294,7 @@ const BRAND = {
 
 // Celebrant photos used in "photos" mode (loader, envelope, hero, reminders,
 // snap & share, closing) — Bea's debut shoot in /public/mobile-background.
-// The /gallery page reads every file in /public/mobile-background and /public/desktop-background.
+// The /gallery page reads every file in /public/gallery.
 // Every photo file by its number (add new ones here as Bea's photos come in).
 const PHOTO_FILES: Record<number, string> = {
   1: "debut (1).jpg",
@@ -314,8 +314,8 @@ const PHOTO_FILES: Record<number, string> = {
   15: "debut (15).png",
   16: "debut (16).png",
 }
-// Photo numbers that should never be shown anywhere (also hidden on /gallery —
-// keep in sync with HIDDEN_GALLERY_FILES in lib/fetch-gallery-images.ts).
+// Photo numbers that should never be shown on the invitation (loader, hero, etc.).
+// The /gallery page shows every file in /public/gallery.
 export const HIDDEN_PHOTOS = [4, 7]
 // Favorites picked for specific spots: PHOTO(n) = public/mobile-background/debut (n)
 const PHOTO = (n: number) =>

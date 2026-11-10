@@ -3,12 +3,6 @@ import path from "path"
 
 const IMAGE_EXTENSIONS = new Set([".webp", ".jpg", ".jpeg", ".png", ".gif"])
 
-/** Files never shown in the gallery (keep in sync with HIDDEN_PHOTOS in content/site.ts). */
-const HIDDEN_GALLERY_FILES = new Set([
-  "mobile-background/debut (4).jpg",
-  "mobile-background/debut (7).png",
-])
-
 /** Encode each path segment so spaces/parentheses work in production URLs. */
 export function encodePublicImagePath(src: string): string {
   return (
@@ -116,7 +110,6 @@ function readImagesFromPublicDir(relativeDir: string): GalleryImageFile[] {
   return fs
     .readdirSync(dir)
     .filter((file) => IMAGE_EXTENSIONS.has(path.extname(file).toLowerCase()))
-    .filter((file) => !HIDDEN_GALLERY_FILES.has(`${relativeDir}/${file}`))
     .sort(naturalSort)
     .map((file) => {
       const size = readImageSize(path.join(dir, file))
@@ -128,15 +121,7 @@ function readImagesFromPublicDir(relativeDir: string): GalleryImageFile[] {
     })
 }
 
-export type GalleryFolderImages = {
-  desktop: GalleryImageFile[]
-  mobile: GalleryImageFile[]
-}
-
-/** Gallery list from public/desktop-background and public/mobile-background. */
-export async function fetchGalleryImages(): Promise<GalleryFolderImages> {
-  return {
-    desktop: readImagesFromPublicDir("desktop-background"),
-    mobile: readImagesFromPublicDir("mobile-background"),
-  }
+/** Gallery list from public/gallery. */
+export async function fetchGalleryImages(): Promise<GalleryImageFile[]> {
+  return readImagesFromPublicDir("gallery")
 }

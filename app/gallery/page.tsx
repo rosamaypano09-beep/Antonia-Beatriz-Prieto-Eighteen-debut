@@ -91,20 +91,13 @@ function GalleryTitle({ title, script }: { title: string; script: string }) {
 }
 
 export default async function GalleryPage() {
-  const { desktop, mobile } = await fetchGalleryImages()
+  const files = await fetchGalleryImages()
   const copy = siteConfig.gallery
-  const images = [
-    ...desktop.map((image) => ({
-      ...image,
-      category: "desktop" as const,
-      orientation: (image.width >= image.height ? "landscape" : "portrait") as "portrait" | "landscape",
-    })),
-    ...mobile.map((image) => ({
-      ...image,
-      category: "mobile" as const,
-      orientation: (image.width >= image.height ? "landscape" : "portrait") as "portrait" | "landscape",
-    })),
-  ]
+  const images = files.map((image) => ({
+    ...image,
+    category: "gallery" as const,
+    orientation: (image.width >= image.height ? "landscape" : "portrait") as "portrait" | "landscape",
+  }))
 
   return (
     <main
