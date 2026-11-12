@@ -470,6 +470,8 @@ export const siteConfig = {
     // Date / time / venue in the details row come from ceremony.
     gala: {
       photo: "/Details/debutant.png", // cut-out portrait (transparent background)
+      // Blurred photo marquee behind the loading poster (falls back to backgroundPhotos if empty)
+      marqueePhotos: [16, 15, 14, 13, 12, 11, 10, 9].map(PHOTO),
       eyebrow: "Chapter XVIII",
       cardEyebrow: "You're Invited", // top line on the paper card inside the envelope
       // Invitation line on the paper card, above the name ("" hides it)
@@ -619,7 +621,8 @@ export const siteConfig = {
     buttonText: "View Full Gallery",
     buttonHref: "/gallery",
     decos: { ...SECTION_DECOS },
-    images: CELEBRANT_PHOTOS.map((image) => ({ image, text: "" })),
+    // Four photos shown as a 2×2 grid (PHOTO(n) = public/mobile-background/debut (n))
+    images: [13, 12, 10, 16].map((n) => ({ image: PHOTO(n), text: "" })),
   },
   // Countdown section (components/sections/countdown.tsx)
   countdown: {
@@ -1525,12 +1528,12 @@ export const siteConfig = {
     eyebrow: "Until we celebrate",
     script: "with love, {celebrant}",
     message: "I can't wait to celebrate my eighteenth with you.",
-    // Photos mode — full-screen background that slowly crossfades between the photos.
+    // Photos mode — full-screen background photo (more than one slowly crossfades).
     // Phones (portrait) use "mobile", tablets / desktops (landscape) use "desktop".
     photos: {
-      mobile: [16, 15, 14, 13, 12, 11, 10, 9, 8, 6, 5].map(PHOTO),
+      mobile: [12].map(PHOTO),
       // Same portraits on wide screens (cropped to fill, framed on her face)
-      desktop: [16, 15, 14, 13, 12, 11, 10, 9, 8, 6, 5].map(PHOTO),
+      desktop: [12].map(PHOTO),
     },
     photoAlt: "{celebrant}",
     // Plain mode

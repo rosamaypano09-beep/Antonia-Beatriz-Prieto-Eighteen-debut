@@ -33,13 +33,28 @@
 }
 .gala-marquee .invite-photo-backdrop {
   position: absolute;
-  inset: -32px; /* bleed so the blur has no soft edge */
+  inset: 0;
   z-index: 0;
-  filter: blur(3.5px) saturate(0.95) brightness(1.1);
-  transform: scale(1.04);
+  background: var(--gala-velvet-deep);
 }
 .gala-marquee .loading-screen__backdrop-veil {
   display: none;
+}
+/* Performance: the blur sits on each photo, not on the moving marquee. A filter on the
+   scrolling container is re-run every frame; on a still photo it is drawn once and the
+   track just slides on the GPU. Tiles butt together (no gaps) and each photo is scaled
+   past its tile so the blurred edges are clipped away. */
+.gala-marquee .loading-screen__marquee,
+.gala-marquee .loading-screen__slide-strip {
+  gap: 0;
+  padding-right: 0;
+}
+.gala-marquee .loading-screen__slide-photo {
+  background: var(--gala-velvet-deep);
+}
+.gala-marquee .loading-screen__slide-photo > img {
+  filter: blur(3.5px) saturate(0.95) brightness(1.1);
+  transform: scale(1.08);
 }
 
 /* ---------- Velvet tint ---------- */
@@ -81,7 +96,7 @@
     rgba(0, 0, 0, 0) 94px,
     rgba(0, 0, 0, 0.2) 130px
   );
-  filter: blur(8px);
+  /* No blur filter: a blurred layer that moves is re-blurred every frame */
   animation: gala-sway 14s ease-in-out infinite alternate;
 }
 
@@ -92,28 +107,28 @@
   top: 34%;
   width: 34%;
   height: 52%;
-  filter: blur(12px);
+  /* Soft-edged gradients instead of a blur filter, so the breathing stays on the GPU */
   opacity: 0.8;
   animation: gala-breathe 7s ease-in-out infinite alternate;
 }
 .gala-bg__bloom--left {
   left: -10%;
   background:
-    radial-gradient(circle at 60% 20%, rgba(217, 181, 106, 0.5) 0 6%, transparent 13%),
-    radial-gradient(circle at 30% 42%, #b0162c 0 11%, transparent 20%),
-    radial-gradient(circle at 70% 55%, rgba(217, 181, 106, 0.4) 0 5%, transparent 11%),
-    radial-gradient(circle at 40% 72%, #9a1124 0 13%, transparent 23%),
-    radial-gradient(circle at 75% 88%, rgba(217, 181, 106, 0.35) 0 5%, transparent 12%);
+    radial-gradient(circle at 60% 20%, rgba(217, 181, 106, 0.5) 0, rgba(217, 181, 106, 0.3) 5%, transparent 15%),
+    radial-gradient(circle at 30% 42%, #b0162c 0, rgba(176, 22, 44, 0.7) 8%, transparent 23%),
+    radial-gradient(circle at 70% 55%, rgba(217, 181, 106, 0.4) 0, rgba(217, 181, 106, 0.24) 4%, transparent 13%),
+    radial-gradient(circle at 40% 72%, #9a1124 0, rgba(154, 17, 36, 0.7) 10%, transparent 26%),
+    radial-gradient(circle at 75% 88%, rgba(217, 181, 106, 0.35) 0, rgba(217, 181, 106, 0.2) 4%, transparent 14%);
 }
 .gala-bg__bloom--right {
   right: -10%;
   top: 44%;
   animation-delay: -3.5s;
   background:
-    radial-gradient(circle at 40% 16%, rgba(217, 181, 106, 0.45) 0 6%, transparent 13%),
-    radial-gradient(circle at 70% 38%, #b0162c 0 12%, transparent 22%),
-    radial-gradient(circle at 30% 58%, rgba(217, 181, 106, 0.4) 0 5%, transparent 11%),
-    radial-gradient(circle at 62% 76%, #9a1124 0 13%, transparent 23%);
+    radial-gradient(circle at 40% 16%, rgba(217, 181, 106, 0.45) 0, rgba(217, 181, 106, 0.27) 5%, transparent 15%),
+    radial-gradient(circle at 70% 38%, #b0162c 0, rgba(176, 22, 44, 0.7) 9%, transparent 25%),
+    radial-gradient(circle at 30% 58%, rgba(217, 181, 106, 0.4) 0, rgba(217, 181, 106, 0.24) 4%, transparent 13%),
+    radial-gradient(circle at 62% 76%, #9a1124 0, rgba(154, 17, 36, 0.7) 10%, transparent 26%);
 }
 
 /* Warm spotlight behind the portrait — brightens as the curtains open */
@@ -163,11 +178,12 @@
   position: absolute;
   left: var(--x);
   bottom: -10px;
-  width: var(--size);
-  height: var(--size);
+  /* The glow is part of the gradient (no box-shadow), so each mote is one cheap layer */
+  width: calc(var(--size) * 3);
+  height: calc(var(--size) * 3);
+  margin-left: calc(var(--size) * -1);
   border-radius: 50%;
-  background: var(--gala-gold-soft);
-  box-shadow: 0 0 6px 1px rgba(243, 220, 159, 0.6);
+  background: radial-gradient(circle, #f3dc9f 0 30%, rgba(243, 220, 159, 0.45) 40%, transparent 70%);
   opacity: 0;
   animation: gala-rise var(--dur) linear var(--delay) infinite;
 }
@@ -290,6 +306,14 @@
   }
 }
 
+/* Phones: one light shadow on the gold type instead of two — it is redrawn on every
+   frame of the gold sheen */
+@media (max-width: 640px), (pointer: coarse) {
+  .gala-loader {
+    --gala-shadow: drop-shadow(0 3px 4px rgba(30, 0, 5, 0.6));
+  }
+}
+
 /* ---------- Layout ---------- */
 
 .gala {
@@ -302,7 +326,7 @@
   padding: max(env(safe-area-inset-top), clamp(0.85rem, 2.2dvh, 1.5rem)) 16px
     max(env(safe-area-inset-bottom), clamp(0.55rem, 1.5dvh, 1rem));
   text-align: center;
-  transition: transform 1.4s var(--gala-ease), filter 1.4s var(--gala-ease);
+  transition: transform 1.4s var(--gala-ease);
 }
 
 .gala__head {
@@ -585,6 +609,7 @@
 }
 .gala__progress-track {
   position: relative;
+  contain: layout style; /* the bar's width changes every frame — keep that layout local */
   width: 100%;
   height: 6px;
   padding: 1px;
@@ -678,8 +703,8 @@
   opacity: 0;
 }
 .gala-loader.is-fading .gala {
+  /* Scale only — blurring the whole poster during the fade stutters on phones */
   transform: scale(1.04);
-  filter: blur(4px);
 }
 
 /* ---------- Reduced motion ---------- */

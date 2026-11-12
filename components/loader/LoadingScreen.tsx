@@ -65,6 +65,14 @@ const RUN_START_SCRIPT = `window.${RUN_START_KEY}=performance.now()`;
 // A rebuilt animation is this far behind the run before it gets fast-forwarded
 const RESYNC_SLACK_MS = 120;
 
+// The marquee is blurred and tinted, so half-resolution photos look the same and load
+// much faster; only the first couple compete with the portrait for bandwidth
+const MARQUEE_IMAGE_OPTIONS = {
+  sizes: '(min-width: 768px) 19vw, 41vw',
+  quality: 45,
+  eagerCount: 2,
+} as const;
+
 // Gold dust drifting up over the velvet
 const MOTES = Array.from({ length: 22 }, (_, i) => ({
   x: (i * 37 + 11) % 100,
@@ -73,6 +81,27 @@ const MOTES = Array.from({ length: 22 }, (_, i) => ({
   delay: -((i * 3.1) % 16),
   drift: (i % 2 === 0 ? 1 : -1) * (10 + ((i * 11) % 22)),
 }));
+
+// Built once: a static element, so status-text re-renders never touch the 22 motes
+const MOTES_LAYER = (
+  <div className="gala-motes" aria-hidden="true">
+    {MOTES.map((m, i) => (
+      <span
+        key={i}
+        className="gala-mote"
+        style={
+          {
+            '--x': `${m.x}%`,
+            '--size': `${m.size}px`,
+            '--dur': `${m.dur}s`,
+            '--delay': `${m.delay}s`,
+            '--drift': `${m.drift}px`,
+          } as React.CSSProperties
+        }
+      />
+    ))}
+  </div>
+);
 
 function GoldRule() {
   return (
@@ -101,7 +130,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
   const fill = (text: string) => fillCelebrant(text, siteConfig);
   // Keyed by the photo list's contents, not its reference, so the same photos arriving
   // in the remote config don't reshuffle the marquee
-  const photosKey = (content.backgroundPhotos ?? []).join('\n');
+  const marqueePhotos = gala.marqueePhotos?.length ? gala.marqueePhotos : content.backgroundPhotos;
+  const photosKey = (marqueePhotos ?? []).filter(Boolean).join('\n');
   const backgroundPhotos = useMemo(
     () => (photosKey ? photosKey.split('\n').map((src) => encodeURI(src)) : []),
     [photosKey],
@@ -259,7 +289,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
       {/* Same photo marquee as the envelope hero, softly blurred under a red-velvet tint */}
       {backgroundPhotos.length > 0 && (
         <div className="gala-marquee" aria-hidden="true">
-          <InvitePhotoBackdrop className="invite-photo-backdrop--gala" photos={backgroundPhotos} />
+          <InvitePhotoBackdrop
+            className="invite-photo-backdrop--gala"
+            photos={backgroundPhotos}
+            imageOptions={MARQUEE_IMAGE_OPTIONS}
+          />
         </div>
       )}
 
@@ -278,25 +312,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, onFade
         fontClassName={theSeasons.className}
         still={reduceMotion}
       />
-      {!reduceMotion && (
-        <div className="gala-motes" aria-hidden="true">
-          {MOTES.map((m, i) => (
-            <span
-              key={i}
-              className="gala-mote"
-              style={
-                {
-                  '--x': `${m.x}%`,
-                  '--size': `${m.size}px`,
-                  '--dur': `${m.dur}s`,
-                  '--delay': `${m.delay}s`,
-                  '--drift': `${m.drift}px`,
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </div>
-      )}
+      {!reduceMotion && MOTES_LAYER}
 
       <div className="gala">
         <header className="gala__head">

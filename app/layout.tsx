@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { siteConfig, canonicalSiteUrl } from "@/content/site"
 import { ClientLayout } from "@/components/client-layout"
-import { LOADING_BG_PHOTOS } from "@/lib/loading-bg-photos"
+import { LOADER_MARQUEE_PHOTOS } from "@/lib/loading-bg-photos"
 import { anastasiaScript, cinzel } from "@/lib/fonts"
 
 const canonicalUrl = canonicalSiteUrl
@@ -171,7 +171,7 @@ export default function RootLayout({
           type="font/ttf"
           crossOrigin="anonymous"
         />
-        {LOADING_BG_PHOTOS.slice(0, 3).map((href, index) => (
+        {LOADER_MARQUEE_PHOTOS.slice(0, 3).map((href, index) => (
           <link
             key={href}
             rel="preload"

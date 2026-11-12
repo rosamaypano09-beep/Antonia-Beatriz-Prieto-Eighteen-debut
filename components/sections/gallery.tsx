@@ -59,11 +59,6 @@ const frameStyle: React.CSSProperties = {
   boxShadow: "0 16px 32px -14px color-mix(in srgb, var(--color-coastal-deep) 70%, transparent)",
 }
 
-const badgeStyle: React.CSSProperties = {
-  backgroundColor: "color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)",
-  color: C.light,
-}
-
 function DiamondDivider({ children }: { children?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-center gap-2">
@@ -119,11 +114,8 @@ type GalleryItem = { image: string; text: string }
 
 export function Gallery() {
   const { gallery } = useSiteConfig()
-  const galleryItems: GalleryItem[] = gallery.images
-  // Desktop mosaic: 1 featured (fills 4 cells) + 8 tiles = 12 cells → whole rows at 3 or 4 columns
-  const DESKTOP_TILES = 9
-  const desktopItems = galleryItems.slice(0, DESKTOP_TILES)
-  const hiddenCount = galleryItems.length - desktopItems.length
+  // Quadrant layout: exactly four photos in a 2×2 grid
+  const galleryItems: GalleryItem[] = gallery.images.slice(0, 4)
 
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -292,128 +284,44 @@ export function Gallery() {
           </div>
         ) : (
           <>
-            {/* Mobile: swipeable sliding gallery (scroll-snap carousel).
-                Full-bleed (cancels the wrapper's px-6) with 11% side padding, so every
-                card — first and last included — snaps to the center with even margins
-                and the neighbours peek in on both sides. */}
-            <div className="sm:hidden">
-              <div
-                className="-mx-6 flex gap-3 overflow-x-auto px-[11%] pt-2 pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                aria-label="Gallery carousel"
-              >
-                {galleryItems.map((item, index) => (
-                  <button
-                    key={item.image + index}
-                    type="button"
-                    className="group relative snap-center shrink-0 w-[78%] rounded-lg transition-transform duration-300 active:scale-[0.98]"
-                    style={frameStyle}
-                    onPointerDown={handleThumbPointerDown}
-                    onPointerMove={handleThumbPointerMove}
-                    onClick={() => openLightbox(item, index)}
-                    aria-label={`Open image ${index + 1}`}
-                  >
-                    <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-                      <Image
-                        src={item.image}
-                        alt={item.text || `Gallery image ${index + 1}`}
-                        fill
-                        sizes="78vw"
-                        className="object-cover"
-                      />
-                    </div>
-
-                    <div className="absolute top-2 right-2 rounded-full px-2 py-0.5 backdrop-blur-sm" style={badgeStyle}>
-                      <span className="text-[11px] font-medium tracking-wider">
-                        {index + 1}/{galleryItems.length}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              <p
-                className={`${cinzel.className} mt-1 text-center tracking-[0.2em] uppercase ${sectionType.label}`}
-                style={{ color: C.eyebrow, textShadow: textLift }}
-              >
-                Swipe to explore
-              </p>
-            </div>
-
-            {/* Tablet/Desktop: curated mosaic — one featured portrait (2×2) beside a tidy
-                grid that always fills whole rows (3 cols on tablet, 4 on desktop). The
-                last tile shows how many more photos open in the lightbox. */}
-            <div className="hidden sm:grid grid-cols-3 gap-3 md:gap-4 lg:grid-cols-4 lg:gap-5">
-              {desktopItems.map((item, index) => {
-                const featured = index === 0
-                const isMoreTile = index === desktopItems.length - 1 && hiddenCount > 0
-                return (
-                  <button
-                    key={item.image + index}
-                    type="button"
-                    className={`group relative w-full overflow-hidden rounded-xl text-left transition-transform duration-500 ease-out hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-welcome-gold)] ${featured ? "col-span-2 row-span-2" : ""}`}
-                    style={frameStyle}
-                    onPointerDown={handleThumbPointerDown}
-                    onPointerMove={handleThumbPointerMove}
-                    onClick={() => openLightbox(item, index)}
-                    aria-label={isMoreTile ? `Open image ${index + 1} — ${hiddenCount} more photos` : `Open image ${index + 1}`}
-                  >
-                    <div className={`relative overflow-hidden ${featured ? "h-full" : "aspect-[3/4]"}`}>
-                      <Image
-                        src={item.image}
-                        alt={item.text || `Gallery image ${index + 1}`}
-                        fill
-                        sizes={featured ? "(max-width: 1024px) 66vw, 560px" : "(max-width: 1024px) 33vw, 280px"}
-                        className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                      />
-                      {/* Soft wine wash on hover */}
-                      <div
-                        className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                        style={{
-                          background:
-                            "linear-gradient(to top, color-mix(in srgb, var(--color-motif-deep) 65%, transparent), transparent 55%)",
-                        }}
-                      />
-                      {/* Gold hairline frame that draws in on hover */}
-                      <div
-                        className="pointer-events-none absolute inset-2.5 rounded-lg border opacity-0 transition-all duration-500 group-hover:inset-3 group-hover:opacity-100"
-                        style={{ borderColor: "color-mix(in srgb, var(--color-welcome-gold) 70%, transparent)" }}
-                        aria-hidden
-                      />
-                      {isMoreTile && (
-                        <div
-                          className="absolute inset-0 flex flex-col items-center justify-center gap-1 backdrop-blur-[2px]"
-                          style={{ background: "color-mix(in srgb, var(--color-motif-deep) 62%, transparent)" }}
-                        >
-                          {/* Cinzel, not The Seasons: the demo font swaps "+" for a DEMO glyph */}
-                          <span
-                            className={`${cinzel.className} text-3xl font-normal leading-none tracking-[0.04em] md:text-4xl`}
-                            style={{ color: "#fff", textShadow: textLift }}
-                          >
-                            +{hiddenCount}
-                          </span>
-                          <span
-                            className={`${cinzel.className} text-[0.5625rem] font-semibold uppercase tracking-[0.26em] md:text-[0.625rem]`}
-                            style={{ color: C.eyebrow }}
-                          >
-                            More photos
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {!isMoreTile && (
-                      <div
-                        className="absolute top-2.5 right-2.5 rounded-full px-2 py-0.5 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100"
-                        style={badgeStyle}
-                      >
-                        <span className="text-[11px] font-medium tracking-wider">
-                          {index + 1}/{galleryItems.length}
-                        </span>
-                      </div>
-                    )}
-                  </button>
-                )
-              })}
+            {/* Quadrant: four portraits in a 2×2 grid on every screen size */}
+            <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2.5 sm:gap-4 md:gap-5">
+              {galleryItems.map((item, index) => (
+                <button
+                  key={item.image + index}
+                  type="button"
+                  className="group relative w-full overflow-hidden rounded-lg text-left transition-transform duration-500 ease-out hover:-translate-y-1 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-welcome-gold)] sm:rounded-xl"
+                  style={frameStyle}
+                  onPointerDown={handleThumbPointerDown}
+                  onPointerMove={handleThumbPointerMove}
+                  onClick={() => openLightbox(item, index)}
+                  aria-label={`Open image ${index + 1}`}
+                >
+                  <div className="relative aspect-[3/4] overflow-hidden">
+                    <Image
+                      src={item.image}
+                      alt={item.text || `Gallery image ${index + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 380px"
+                      className="object-cover object-[center_25%] transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+                    />
+                    {/* Soft wine wash on hover */}
+                    <div
+                      className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                      style={{
+                        background:
+                          "linear-gradient(to top, color-mix(in srgb, var(--color-motif-deep) 65%, transparent), transparent 55%)",
+                      }}
+                    />
+                    {/* Gold hairline frame that draws in on hover */}
+                    <div
+                      className="pointer-events-none absolute inset-2.5 rounded-lg border opacity-0 transition-all duration-500 group-hover:inset-3 group-hover:opacity-100"
+                      style={{ borderColor: "color-mix(in srgb, var(--color-welcome-gold) 70%, transparent)" }}
+                      aria-hidden
+                    />
+                  </div>
+                </button>
+              ))}
             </div>
 
             <div className="mt-10 flex justify-center sm:mt-12 md:mt-14">

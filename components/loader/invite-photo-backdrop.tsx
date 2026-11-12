@@ -33,16 +33,31 @@ function splitMarqueeRows(photos: readonly string[]) {
   return [top, bottom] as const;
 }
 
+type ImageOptions = {
+  /** next/image `sizes` for each tile */
+  sizes?: string;
+  /** next/image quality (1–100) */
+  quality?: number;
+  /** Tiles per row loaded with priority (default: all for short lists, else 3) */
+  eagerCount?: number;
+};
+
+const DEFAULT_SIZES = '(min-width: 768px) 38vw, 82vw';
+
 function MarqueeRow({
   photos,
   copies,
   direction,
   eagerCount,
+  sizes = DEFAULT_SIZES,
+  quality = 55,
 }: {
   photos: readonly string[];
   copies: number;
   direction: 'left' | 'right';
   eagerCount: number;
+  sizes?: string;
+  quality?: number;
 }) {
   return (
     <div className={`loading-screen__marquee-row loading-screen__marquee-row--${direction}`}>
@@ -57,8 +72,8 @@ function MarqueeRow({
                     src={src}
                     alt=""
                     fill
-                    sizes="(min-width: 768px) 38vw, 82vw"
-                    quality={55}
+                    sizes={sizes}
+                    quality={quality}
                     priority={eager}
                     draggable={false}
                     decoding="async"
@@ -80,11 +95,13 @@ export function PhotoMarquee({
   copies,
   variant,
   shuffle = true,
+  imageOptions,
 }: {
   photos: readonly string[];
   copies: number;
   variant: 'mobile' | 'desktop' | 'loader';
   shuffle?: boolean;
+  imageOptions?: ImageOptions;
 }) {
   const compact = !shuffle || photos.length <= 5;
   const [selected, setSelected] = useState(() =>
@@ -106,23 +123,27 @@ export function PhotoMarquee({
   const [top, bottom] = compact
     ? [selected, [...selected].reverse()]
     : splitMarqueeRows(selected);
-  const eagerCount = compact ? selected.length : 3;
+  const eagerCount = imageOptions?.eagerCount ?? (compact ? selected.length : 3);
+  const rowProps = { copies, eagerCount, sizes: imageOptions?.sizes, quality: imageOptions?.quality };
 
   return (
     <div className={`loading-screen__marquee loading-screen__marquee--${variant}`}>
-      <MarqueeRow photos={top} copies={copies} direction="left" eagerCount={eagerCount} />
-      <MarqueeRow photos={bottom} copies={copies} direction="right" eagerCount={eagerCount} />
+      <MarqueeRow photos={top} direction="left" {...rowProps} />
+      <MarqueeRow photos={bottom} direction="right" {...rowProps} />
     </div>
   );
 }
 
 /** Fixed photo marquee + veil — continuity from loading screen (photos display only). */
-export function InvitePhotoBackdrop({
+export const InvitePhotoBackdrop = React.memo(function InvitePhotoBackdrop({
   className = '',
   photos,
+  imageOptions,
 }: {
   className?: string;
   photos?: readonly string[];
+  /** Smaller / fewer priority images, e.g. for a blurred backdrop */
+  imageOptions?: ImageOptions;
 }) {
   const reduceMotion = useHydratedReducedMotion();
   const copies = reduceMotion ? 1 : 2;
@@ -137,8 +158,8 @@ export function InvitePhotoBackdrop({
 
   return (
     <div className={`invite-photo-backdrop ${className}`.trim()} aria-hidden="true">
-      <PhotoMarquee photos={resolved} copies={copies} variant="mobile" />
+      <PhotoMarquee photos={resolved} copies={copies} variant="mobile" imageOptions={imageOptions} />
       <div className="loading-screen__backdrop-veil" />
     </div>
   );
-}
+});
