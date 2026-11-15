@@ -258,86 +258,6 @@ function PaletteBox({
   )
 }
 
-// Gentle reminders photos as a fanned deck: the top card faces front, the rest peek
-// out behind it in pairs (left / right). With an even count the last card has no
-// partner, so it sits straight behind the front card and peeks out over its top —
-// four photos read as a balanced fan instead of two on one side and one on the other.
-// Each step the top card glides to the back of the pile and the next one springs forward.
-const DECK_VISIBLE = 5
-
-function deckPose(depth: number, count: number) {
-  if (depth === 0) return { x: 0, y: 0, rotate: 0, scale: 1 }
-  const pairs = Math.floor((Math.min(count, DECK_VISIBLE) - 1) / 2)
-  if (depth > pairs * 2) return { x: 0, y: -16, rotate: 0, scale: 0.86 }
-  const side = depth % 2 === 1 ? -1 : 1
-  const step = Math.ceil(depth / 2)
-  // Each pair steps a good part of a card out to the side, so every photo shows
-  return {
-    x: side * step * 58,
-    y: step * 8,
-    rotate: side * (5 + step * 3),
-    scale: 1 - step * 0.08,
-  }
-}
-
-function PhotoDeck({
-  images,
-  currentIndex,
-  reduceMotion,
-}: {
-  images: readonly string[]
-  currentIndex: number
-  reduceMotion: boolean | null
-}) {
-  const count = images.length
-  return (
-    <div className="relative mx-auto mb-6 mt-3 h-[11.5rem] w-full max-w-[19rem] sm:mb-7 sm:h-[14rem] sm:max-w-[23rem]" aria-hidden>
-      {images.map((image, index) => {
-        // 0 = top of the deck, 1… = further back
-        const depth = (index - currentIndex + count) % count
-        const pose = deckPose(depth, count)
-        return (
-          <motion.div
-            key={image}
-            className="absolute inset-x-0 top-0 mx-auto aspect-[9/16] w-[5.6rem] overflow-hidden rounded-md sm:w-[6.8rem]"
-            style={{
-              zIndex: count - depth,
-              padding: 3,
-              background: "var(--color-motif-soft)",
-              outline: "1px solid color-mix(in srgb, var(--color-welcome-gold) 45%, transparent)",
-              outlineOffset: -1,
-              boxShadow:
-                depth === 0
-                  ? "0 14px 26px -10px color-mix(in srgb, var(--color-coastal-deep) 60%, transparent)"
-                  : "0 6px 14px -8px color-mix(in srgb, var(--color-coastal-deep) 45%, transparent)",
-            }}
-            initial={false}
-            animate={{
-              ...pose,
-              opacity: depth < DECK_VISIBLE ? 1 : 0,
-            }}
-            transition={
-              reduceMotion
-                ? { duration: 0 }
-                : { type: "spring", stiffness: 140, damping: 20, mass: 0.9 }
-            }
-          >
-            <div className="relative h-full w-full overflow-hidden rounded-[0.3rem]">
-              <Image src={image} alt="" fill className="object-cover object-top" sizes="(min-width: 640px) 120px, 100px" />
-              {depth > 0 && (
-                <div
-                  className="absolute inset-0"
-                  style={{ background: "color-mix(in srgb, var(--color-motif-deep) 18%, transparent)" }}
-                />
-              )}
-            </div>
-          </motion.div>
-        )
-      })}
-    </div>
-  )
-}
-
 function FadeRule({ className = "" }: { className?: string }) {
   return (
     <span
@@ -791,18 +711,14 @@ export function Details() {
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set())
   const [ceremonyImageIndex, setCeremonyImageIndex] = useState(0)
   const [receptionImageIndex, setReceptionImageIndex] = useState(0)
-  const [reminderImageIndex, setReminderImageIndex] = useState(0)
   const reduceMotion = useReducedMotion()
 
   // "combined" = one card for both events at the ceremony venue (eventDetails.venues.layout)
   const isCombined = venues.layout === "combined"
   const ceremonyImages = ceremony.image
   const receptionImages = isCombined ? [] : reception.image
-  // "plain" display mode (loadingScreen.display) shows no photos above the reminders
-  const isPlain = siteConfig.loadingScreen?.display === "plain"
   // Same edge lettering as the loading screen, envelope and hero
   const ghostText = ghostTextFor(siteConfig)
-  const reminderImages = isPlain ? [] : reminders.images
   const reminderPalette = toPaletteColors(attire.palette)
   // Guard against null entries (e.g. a stray comma in ATTIRE.show)
   const attireGroups = attire.groups.filter(Boolean)
@@ -818,15 +734,6 @@ export function Details() {
     const timer = setInterval(() => setReceptionImageIndex((prev) => (prev + 1) % receptionImages.length), 4500)
     return () => clearInterval(timer)
   }, [receptionImages.length])
-
-  // Gentle reminders photo deck — the top card moves to the back every few seconds
-  useEffect(() => {
-    if (reminderImages.length <= 1 || reduceMotion) return
-    const interval = setInterval(() => {
-      setReminderImageIndex((prev) => (prev + 1) % reminderImages.length)
-    }, 3200)
-    return () => clearInterval(interval)
-  }, [reminderImages.length, reduceMotion])
 
   const copyToClipboard = async (text: string, itemId: string) => {
     try {
@@ -1060,13 +967,6 @@ export function Details() {
                 viewport={{ once: true, amount: 0.15 }}
               >
                 <motion.div variants={reminderItemVariants} className="flex flex-col items-center">
-                  {reminderImages.length > 0 ? (
-                    <PhotoDeck
-                      images={reminderImages}
-                      currentIndex={reminderImageIndex}
-                      reduceMotion={reduceMotion}
-                    />
-                  ) : null}
                   <h3
                     className={`${theSeasons.className} ${ct.sectionTitle} font-semibold uppercase tracking-[0.18em]`}
                     style={{ color: C.heading }}

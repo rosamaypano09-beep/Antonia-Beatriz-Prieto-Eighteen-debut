@@ -19,6 +19,8 @@ import {
   RefreshCw,
   Share2,
   ChevronDown,
+  PencilLine,
+  RotateCcw,
 } from "lucide-react"
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 import { useSiteConfig } from "@/hooks/use-site-config"
@@ -42,6 +44,62 @@ const playfair = Playfair_Display({ subsets: ["latin"], weight: ["500", "600"] }
 const PLAYFUL_ROLE_IDS = new Set(["flower-girl", "ring-bearer", "coin-bearer", "bible-bearer", "herald-bearer"])
 
 const CATEGORY_TABS = ["all", "Entourage", "Principal Sponsor"] as const
+
+// Editable invite message. One template is shared by every role and guest; the
+// {placeholders} are filled in per invite. The personal link is NOT part of the
+// template — it always sits between the message and the sign-off, so editing the
+// text can never break or remove it.
+type InviteTemplate = { message: string; closing: string }
+
+const DEFAULT_INVITE_TEMPLATE: InviteTemplate = {
+  message: `Dear {name},
+
+{celebrant} has a personal debut invitation for you.
+
+She would love for you to please open your special link, read her message, and let her know if you can be {role}?
+For your reply click the link, find the button at the digital invitation. Thanks!
+
+{date} | {day} | {time}
+{venue}
+
+Open your invitation:`,
+  closing: `With love,
+{celebrant}`,
+}
+
+const INVITE_PLACEHOLDERS = ["{name}", "{role}", "{celebrant}", "{date}", "{day}", "{time}", "{venue}"] as const
+
+// Saved in this browser so the edited message is reused for every invite
+const INVITE_TEMPLATE_KEY = "proposal-invite-template-v1"
+
+function loadInviteTemplate(): InviteTemplate {
+  try {
+    const raw = window.localStorage.getItem(INVITE_TEMPLATE_KEY)
+    if (!raw) return DEFAULT_INVITE_TEMPLATE
+    const data = JSON.parse(raw) as Partial<InviteTemplate>
+    return {
+      message: typeof data.message === "string" ? data.message : DEFAULT_INVITE_TEMPLATE.message,
+      closing: typeof data.closing === "string" ? data.closing : DEFAULT_INVITE_TEMPLATE.closing,
+    }
+  } catch {
+    return DEFAULT_INVITE_TEMPLATE
+  }
+}
+
+function saveInviteTemplate(template: InviteTemplate) {
+  try {
+    const isDefault =
+      template.message === DEFAULT_INVITE_TEMPLATE.message && template.closing === DEFAULT_INVITE_TEMPLATE.closing
+    if (isDefault) window.localStorage.removeItem(INVITE_TEMPLATE_KEY)
+    else window.localStorage.setItem(INVITE_TEMPLATE_KEY, JSON.stringify(template))
+  } catch {
+    // storage blocked — the edit still applies for this session
+  }
+}
+
+function fillInviteTemplate(text: string, values: Record<string, string>) {
+  return text.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key] : match))
+}
 
 interface EntourageRow {
   Name?: string
@@ -71,14 +129,35 @@ export function ProposalDashboard() {
   const [copiedPersonalLink, setCopiedPersonalLink] = useState(false)
   const [inviteNameError, setInviteNameError] = useState("")
   const [showInviteHelp, setShowInviteHelp] = useState(false)
-  const [showSetupNote, setShowSetupNote] = useState(false)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
   const [canShare, setCanShare] = useState(false)
   const [showShareSheet, setShowShareSheet] = useState(false)
+  const [inviteTemplate, setInviteTemplate] = useState<InviteTemplate>(DEFAULT_INVITE_TEMPLATE)
+  const [isEditingMessage, setIsEditingMessage] = useState(false)
+  const [templateDraft, setTemplateDraft] = useState<InviteTemplate>(DEFAULT_INVITE_TEMPLATE)
+  const [templateSaved, setTemplateSaved] = useState(false)
 
   useEffect(() => {
     setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function")
+    setInviteTemplate(loadInviteTemplate())
   }, [])
+
+  const startEditingMessage = () => {
+    setTemplateDraft(inviteTemplate)
+    setIsEditingMessage(true)
+  }
+
+  const saveEditedMessage = () => {
+    setInviteTemplate(templateDraft)
+    saveInviteTemplate(templateDraft)
+    setIsEditingMessage(false)
+    setTemplateSaved(true)
+    setTimeout(() => setTemplateSaved(false), 2500)
+  }
+
+  const isDraftDefault =
+    templateDraft.message === DEFAULT_INVITE_TEMPLATE.message &&
+    templateDraft.closing === DEFAULT_INVITE_TEMPLATE.closing
 
   useBodyScrollLock(Boolean(selectedInviteRole))
 
@@ -129,36 +208,36 @@ export function ProposalDashboard() {
     setCopiedPersonalLink(false)
     setInviteNameError("")
     setShowShareSheet(false)
+    setIsEditingMessage(false)
   }
 
+  // Message text without the link: the shared template with this guest's details filled in
+  const getInviteParts = (template: InviteTemplate = inviteTemplate) => {
+    if (!selectedInviteRole) return { message: "", closing: "" }
+    const roleSingular = getRoleSingular(selectedInviteRole.title)
+    const values: Record<string, string> = {
+      name: inviteeName.trim() || "Name",
+      role: roleSingular.match(/^One of/i) ? roleSingular.replace(/^One of My/i, "one of her") : `her ${roleSingular}`,
+      celebrant: celebrantName(siteConfig),
+      date: siteConfig.wedding.date,
+      day: siteConfig.ceremony.day ?? "Saturday",
+      time: siteConfig.ceremony.time ?? siteConfig.wedding.time,
+      venue: siteConfig.ceremony.location,
+    }
+    return {
+      message: fillInviteTemplate(template.message, values).trim(),
+      closing: fillInviteTemplate(template.closing, values).trim(),
+    }
+  }
+
+  // Full message: edited text + the generated link (always included, never editable)
   const getInviteMessage = () => {
     if (!selectedInviteRole) return ""
-    const name = inviteeName.trim()
-    const roleSingular = getRoleSingular(selectedInviteRole.title)
-    const url = getProposalLink(selectedInviteRole.id, name)
-    const celebrant = celebrantName(siteConfig)
-    const date = siteConfig.wedding.date
-    const day = siteConfig.ceremony.day ?? "Saturday"
-    const time = siteConfig.ceremony.time ?? siteConfig.wedding.time
-    const venue = siteConfig.ceremony.location
-
-    const greeting = name ? `Dear ${name},` : "Hello,"
-
-    return `${greeting}
-
-${celebrant} has a personal debut invitation for you.
-
-She would love for you to please open your special link, read her message, and let her know if you can be ${roleSingular.match(/^One of/i) ? roleSingular.replace(/^One of My/i, "one of her") : `her ${roleSingular}`}?
-For your reply click the link, find the button at the digital invitation. Thanks!
-
-${date} | ${day} | ${time}
-${venue}
-
-Open your invitation:
-${url}
-
-With love,
-${celebrant}`
+    const url = getProposalLink(selectedInviteRole.id, inviteeName.trim())
+    const { message, closing } = getInviteParts()
+    let text = message ? `${message}\n${url}` : url
+    if (closing) text += `\n\n${closing}`
+    return text
   }
 
   const handleCopyInviteText = () => {
@@ -451,30 +530,6 @@ ${celebrant}`
         </div>
       )}
 
-      {/* Setup note (for whoever maintains the Google Sheets) */}
-      <div className="rounded-xl border border-dash-border bg-dash-bg">
-        <button
-          type="button"
-          onClick={() => setShowSetupNote((v) => !v)}
-          aria-expanded={showSetupNote}
-          className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-xs font-medium text-gray-500"
-        >
-          <span className="flex items-center gap-1.5">
-            <Info className="h-3.5 w-3.5" />
-            Google Sheets setup note
-          </span>
-          <ChevronDown className={`h-4 w-4 transition-transform ${showSetupNote ? "rotate-180" : ""}`} />
-        </button>
-        {showSetupNote && (
-          <p className="border-t border-dash-border px-4 py-3 text-xs leading-relaxed text-gray-500">
-            Confirmed responses fill the bottom-most empty row in{" "}
-            <span className="font-mono text-gray-600">googleAPI.entourage</span> or{" "}
-            <span className="font-mono text-gray-600">googleAPI.sponsors</span> for the matching role (Name + RoleCategory).
-            Redeploy the Apps Script after updating <span className="font-mono text-gray-600">entourage-management.js</span> and{" "}
-            <span className="font-mono text-gray-600">principal-sponsor-management.js</span>.
-          </p>
-        )}
-      </div>
 
       {/* ── Personalize & send sheet ──────────────────────────────────── */}
       {selectedInviteRole && (
@@ -571,14 +626,96 @@ ${celebrant}`
               </div>
 
               <div className="space-y-1">
-                <p className="text-[13px] font-medium text-dash-ink">Message preview</p>
-                <div className="rounded-2xl rounded-tl-md border border-dash-border bg-dash-surface p-3.5">
-                  <ProposalMixedTextBlock
-                    text={getInviteMessage()}
-                    className={`${proposalMixedTextInter.className} max-h-56 overflow-y-auto text-[13px] leading-relaxed text-dash-ink [overflow-wrap:anywhere]`}
-                    lineClassName="min-h-[1.35em]"
-                  />
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[13px] font-medium text-dash-ink">
+                    {isEditingMessage ? "Edit message" : "Message preview"}
+                  </p>
+                  {!isEditingMessage ? (
+                    <button
+                      type="button"
+                      onClick={startEditingMessage}
+                      className={`flex h-7 items-center gap-1 rounded-lg px-2.5 text-xs font-semibold transition-colors ${
+                        templateSaved ? "bg-dash-accent text-white" : "bg-white text-dash-primary ring-1 ring-dash-border hover:bg-dash-surface"
+                      }`}
+                    >
+                      {templateSaved ? <Check className="h-3.5 w-3.5" /> : <PencilLine className="h-3.5 w-3.5" />}
+                      {templateSaved ? "Saved" : "Edit"}
+                    </button>
+                  ) : null}
                 </div>
+
+                {isEditingMessage ? (
+                  <div className="space-y-2.5 rounded-2xl rounded-tl-md border border-dash-focus bg-dash-surface p-3">
+                    <p className="text-[11px] leading-relaxed text-gray-500">
+                      This message is used for every invite. These words fill in automatically:{" "}
+                      {INVITE_PLACEHOLDERS.map((p, i) => (
+                        <span key={p}>
+                          <code className="rounded bg-white px-1 py-px text-[10.5px] text-dash-primary ring-1 ring-dash-border">{p}</code>
+                          {i < INVITE_PLACEHOLDERS.length - 1 ? " " : ""}
+                        </span>
+                      ))}
+                    </p>
+                    <textarea
+                      aria-label="Message before the link"
+                      value={templateDraft.message}
+                      onChange={(e) => setTemplateDraft((d) => ({ ...d, message: e.target.value }))}
+                      rows={10}
+                      className={`${FIELD} ${proposalMixedTextInter.className} resize-y bg-white text-[13px] leading-relaxed`}
+                    />
+                    {/* The generated link — locked, always included */}
+                    <div className="flex items-center gap-2 rounded-xl border border-dashed border-dash-border bg-white px-3 py-2">
+                      <Link2 className="h-3.5 w-3.5 shrink-0 text-dash-accent" />
+                      <p className="min-w-0 flex-1 truncate font-mono text-[11px] text-gray-500">
+                        {getProposalLink(selectedInviteRole.id, inviteeName.trim() || undefined)}
+                      </p>
+                      <span className="shrink-0 rounded-full bg-dash-tint px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wide text-dash-primary">
+                        Auto link
+                      </span>
+                    </div>
+                    <textarea
+                      aria-label="Sign-off after the link"
+                      value={templateDraft.closing}
+                      onChange={(e) => setTemplateDraft((d) => ({ ...d, closing: e.target.value }))}
+                      rows={2}
+                      className={`${FIELD} ${proposalMixedTextInter.className} resize-y bg-white text-[13px] leading-relaxed`}
+                    />
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setTemplateDraft(DEFAULT_INVITE_TEMPLATE)}
+                        disabled={isDraftDefault}
+                        className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-gray-500 transition-colors hover:text-dash-ink disabled:opacity-40"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Reset to default
+                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingMessage(false)}
+                          className="h-8 rounded-lg bg-white px-3 text-xs font-semibold text-dash-ink ring-1 ring-dash-border transition-colors hover:bg-dash-surface"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={saveEditedMessage}
+                          className="h-8 rounded-lg bg-dash-primary px-3.5 text-xs font-semibold text-white transition-all hover:brightness-110"
+                        >
+                          Save message
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-2xl rounded-tl-md border border-dash-border bg-dash-surface p-3.5">
+                    <ProposalMixedTextBlock
+                      text={getInviteMessage()}
+                      className={`${proposalMixedTextInter.className} max-h-56 overflow-y-auto text-[13px] leading-relaxed text-dash-ink [overflow-wrap:anywhere]`}
+                      lineClassName="min-h-[1.35em]"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2 rounded-xl border border-dash-border bg-dash-bg py-1.5 pl-3 pr-1.5">

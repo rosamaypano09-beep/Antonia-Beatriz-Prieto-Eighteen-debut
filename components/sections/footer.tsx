@@ -389,7 +389,7 @@ export function Footer() {
                   <Label>{content.noteTitle}</Label>
                   <Heart className="h-3.5 w-3.5 shrink-0" style={{ color: palette.label, fill: palette.label }} aria-hidden />
                 </div>
-                <blockquote className={`${lora.className} relative ${ct.bodyLg} font-medium italic leading-[1.7]`}>
+                <blockquote className={`${lora.className} relative ${ct.bodyLg} whitespace-pre-line font-medium italic leading-[1.7]`}>
                   {/* Reserve height for the longest quote so the card doesn't jump */}
                   <span className="invisible block select-none" aria-hidden="true">
                     &ldquo;{longestQuote}&rdquo;

@@ -266,16 +266,16 @@ function PhotoSeeYouThere() {
           />
         )}
 
-        {/* Phones: the text sits low, so the bottom half deepens to wine */}
+        {/* The text is centred on every screen, so darken a soft oval behind it
+            (wider on phones, where the text block takes up more of the width) */}
         <div
           className="pointer-events-none absolute inset-0 md:hidden"
           style={{
             background:
-              "linear-gradient(180deg, rgb(30 4 10 / 35%) 0%, rgb(30 4 10 / 6%) 26%, rgb(30 4 10 / 22%) 46%, rgb(40 5 14 / 76%) 66%, rgb(26 3 9 / 93%) 100%)",
+              "radial-gradient(85% 40% at 50% 50%, rgb(30 4 10 / 70%) 0%, rgb(30 4 10 / 42%) 60%, transparent 100%), linear-gradient(180deg, rgb(30 4 10 / 38%) 0%, rgb(30 4 10 / 12%) 35%, rgb(30 4 10 / 12%) 65%, rgb(30 4 10 / 58%) 100%)",
           }}
           aria-hidden
         />
-        {/* Tablets / desktops: the text is centred, so darken a soft oval behind it */}
         <div
           className="pointer-events-none absolute inset-0 hidden md:block"
           style={{
@@ -286,7 +286,7 @@ function PhotoSeeYouThere() {
         />
 
         <motion.div
-          className="relative z-10 mx-auto flex min-h-[100svh] max-w-3xl flex-col items-center justify-end px-6 pb-[11svh] pt-24 text-center md:justify-center md:pb-24"
+          className="relative z-10 mx-auto flex min-h-[100svh] max-w-3xl flex-col items-center justify-center px-6 py-24 text-center"
           variants={stagger}
           initial={reduceMotion ? false : "hidden"}
           whileInView="show"

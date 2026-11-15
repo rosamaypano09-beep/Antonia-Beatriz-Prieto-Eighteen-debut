@@ -170,8 +170,8 @@ const RSVP = {
 }
 
 const HASHTAGS = [
-  "#BeaTurns18", // ⚠ check — confirm with the family
-  "#BeautifullyBea18",
+  "#EighteenAndBeyond",
+  "#BeatrizXVIII",
 ]
 // ── Attire guide (Event Details → Attire Guidelines) ────────────────────────
 // SHOW = which cards to display AND their order, top to bottom. Examples:
@@ -700,14 +700,6 @@ export const siteConfig = {
             "To my 18 Candles, instead of a spoken message, may I kindly ask you to bring a handwritten letter? Your words will become keepsakes I can hold onto, reread, and treasure for many years to come.",
           ],
         },
-        {
-          title: "After Party",
-          variant: "accent" as "accent" | "soft",
-          showPalette: false,
-          paragraphs: [
-            "As the evening's festivities come to a close, the night is far from over. Stay beyond 8:30 PM and keep the celebration going. See you after hours!",
-          ],
-        },
       ],
     },
   },
@@ -818,15 +810,6 @@ export const siteConfig = {
         location: "",
         image: "/debut-timeline/dinner.png",
         icon: "dinner" as TimelineIconName,
-      },
-      {
-        show: true,
-        time: "8:30 – 10:00 PM",
-        title: "After Party",
-        description: "",
-        location: "",
-        image: "/debut-timeline/dance-party.png",
-        icon: "dance" as TimelineIconName,
       },
       {
         show: true,
@@ -1126,7 +1109,7 @@ export const siteConfig = {
       {
         question: "How long is the celebration?",
         answer:
-          "The program begins at {programTime}, followed by dinner and an after party. The night comes to a close at {endTime}.",
+          "The program begins at {programTime}, followed by dinner. The night comes to a close at {endTime}.",
       },
       {
         question: "I have dietary restrictions or allergies.",
@@ -1140,9 +1123,10 @@ export const siteConfig = {
     eyebrow: "A Token of Love",
     title: "Gift Guide",
     subtitle: "with gratitude",
-    description: "Your presence on my eighteenth is the best gift I could ask for.",
+    description: "Your presence on my eighteenth is the sweetest gift of all.",
     paragraphs: [
-      "Having you with me on my debut is already a precious blessing. If you wish to give a gift, a monetary gift toward my studies and dreams would be deeply appreciated — but your love, prayers, and presence mean the most.",
+      "Dear family and friends — having you beside me as I turn eighteen is already more than I could ever ask for. Your love, prayers, and the memories we share have shaped who I am today.",
+      "Should you wish to bless me with a gift, a monetary gift toward my studies and the dreams ahead would be received with a full and grateful heart. For your convenience, you may send it through GCash below.",
     ],
     thankYou: "", // "" hides the line
     signOff: "With a grateful heart,",
@@ -1167,12 +1151,11 @@ export const siteConfig = {
     //   show:  false hides one account
     //   qr:    "/QR/BPI.png" to show a QR image, or "" when you have no QR
     showAccounts: true,
-    accountsTitle: "For e-gifts",
+    accountsTitle: "Send a Gift via GCash",
     // Small italic note under the QR ("" hides it)
-    accountsNote: "Sample image for display only — not yet official.", // ⚠ check — clear once the real QR codes are in
+    accountsNote: "Scan the code with your GCash app, or send to the number above.",
     accounts: [
-      { show: true, label: "GCash", accountName: "", accountNumber: "", qr: "/QR/GCASH.png" },
-      { show: true, label: "BDO", accountName: "", accountNumber: "", qr: "/QR/BDO.png" },
+      { show: true, label: "GCash", accountName: "AN****A BE****Z P.", accountNumber: "0960274****", qr: "/QR/debutGcash.png" },
     ] as { show: boolean; label: string; accountName: string; accountNumber: string; qr: string }[],
     // Leave any path "" to hide that decoration
     decos: { ...SECTION_DECOS },
@@ -1514,8 +1497,8 @@ export const siteConfig = {
     // Leave any path "" to hide that decoration
     decos: { ...CORNER_DECOS, headerOrnament: DECOR.headerOrnament },
     // ⚠ check — Spotify link for "Goth" by Sidewalks and Skeletons (track, playlist or album links all work)
-    embedUrl: "https://open.spotify.com/embed/playlist/1YChzOo1Wj6GrTcnz0ap5C?utm_source=generator&si=49d7c00b589b4840",
-    spotifyUrl: "https://open.spotify.com/playlist/1YChzOo1Wj6GrTcnz0ap5C",
+    embedUrl: "https://open.spotify.com/embed/playlist/3gyrRM9EbvNbqgYb4fmZUJ?utm_source=generator&si=495fb8be31bc4ca1",
+    spotifyUrl: "https://open.spotify.com/playlist/3gyrRM9EbvNbqgYb4fmZUJ",
   },
   // Closing "See you there!" section (components/sections/see-you-there.tsx).
   //   photos mode (loadingScreen.display "photos") → full-screen celebrant photo
@@ -1560,9 +1543,10 @@ export const siteConfig = {
     noteTitle: "A Note From Me",
     // Typed out one after another
     quotes: [
-      "She is clothed in strength and dignity, and she laughs without fear of the future. – Proverbs 31:25",
-      "Welcome to my debut website! Eighteen years of love, lessons, and grace — and I'm so grateful to share this night with you.",
-      "Thank you for your love, prayers, and support. I can't wait to celebrate with you!",
+      // Quote marks are added by the footer; "\n\n" starts a new paragraph
+      "You are a mist that appears for a little while and then vanishes.",
+      "It’s not every day that we get to gather everyone in one place, and I’m glad to have you here to share this moment with me.\n\nThank you for making time to celebrate this milestone. I hope tonight gives us good memories, plenty of laughter, and a reason to enjoy each other’s company.\n\nI hope you have a lovely evening and enjoy the celebration!",
+      "Grateful for everyone who has crossed my path. May we always choose kindness, stay true to ourselves, and keep the good intentions we bring into each other’s lives.\n\nThank you for being here.\n\n— Bea",
     ],
     rsvp: {
       show: true,
